@@ -1,0 +1,9 @@
+inherit_gem:
+  rubocop-govuk:
+    - config/default.yml
+
+require:
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 2.4
