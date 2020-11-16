@@ -23,6 +23,9 @@ Gem::Specification.new do |gem|
   gem.require_paths = %w[lib]
   gem.required_ruby_version = ">= 2.4.0"
 
+  gem.add_dependency "activesupport", ">= 6.0.3.4"
+  gem.add_dependency "activemodel", ">= 6.0.3.4"
+
   gem.add_development_dependency "bundler"
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec", ">= 3.10.0"
