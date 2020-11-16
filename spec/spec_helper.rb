@@ -7,16 +7,17 @@ end
 
 require "dfe_wizard"
 
-shared_context "wizard store" do
+shared_context "with wizard store" do
   let(:backingstore) { { "name" => "Joe", "age" => 35 } }
   let(:wizardstore) { DFEWizard::Store.new backingstore }
 end
 
-shared_context "wizard step" do
-  include_context "wizard store"
+shared_context "with wizard step" do
+  include_context "with wizard store"
+  subject { instance }
+
   let(:attributes) { {} }
   let(:instance) { described_class.new nil, wizardstore, attributes }
-  subject { instance }
 end
 
 shared_examples "a wizard step" do

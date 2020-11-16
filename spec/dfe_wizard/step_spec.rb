@@ -3,30 +3,39 @@
 require "spec_helper"
 
 describe DFEWizard::Step do
-  include_context "wizard store"
+  include_context "with wizard store"
 
-  class FirstStep < described_class
-    attribute :name
-    attribute :age, :integer
-    validates :name, presence: true
+  subject { first_step.new nil, wizardstore, attributes }
+
+  let(:first_step) do
+    Class.new(described_class) do
+      attribute :name
+      attribute :age, :integer
+      validates :name, presence: true
+
+      # Needed because we're using an anonymous class
+      def self.name
+        "FirstStep"
+      end
+    end
   end
 
   let(:attributes) { {} }
-  subject { FirstStep.new nil, wizardstore, attributes }
 
   describe ".key" do
     it { expect(described_class.key).to eql "step" }
-    it { expect(FirstStep.key).to eql "first_step" }
+    it { expect(first_step.key).to eql "first_step" }
   end
 
   describe ".title" do
     it { expect(described_class.title).to eql "Step" }
-    it { expect(FirstStep.title).to eql "First step" }
+    it { expect(first_step.title).to eql "First step" }
   end
 
   describe ".new" do
     let(:attributes) { { age: "20" } }
-    it { is_expected.to be_instance_of FirstStep }
+
+    it { is_expected.to be_instance_of first_step }
     it { is_expected.to have_attributes key: "first_step" }
     it { is_expected.to have_attributes id: "first_step" }
     it { is_expected.to have_attributes persisted?: true }
@@ -36,7 +45,7 @@ describe DFEWizard::Step do
   end
 
   describe "#can_proceed" do
-    it { expect(subject).to be_can_proceed }
+    it { is_expected.to be_can_proceed }
   end
 
   describe "#save" do
@@ -60,9 +69,11 @@ describe DFEWizard::Step do
   end
 
   describe "#export" do
-    let(:backingstore) { { "name" => "Joe" } }
-    let(:instance) { FirstStep.new nil, wizardstore, age: 35 }
     subject { instance.export }
+
+    let(:backingstore) { { "name" => "Joe" } }
+    let(:instance) { first_step.new nil, wizardstore, age: 35 }
+
     it { is_expected.to include "name" => "Joe" }
     it { is_expected.to include "age" => nil } # should only export persisted data
   end
