@@ -1,0 +1,28 @@
+name: Test
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Install bundler
+        run: sudo gem install bundler
+
+      - name: Install rubygems
+        run: bundle install --path=vendor/bundle
+
+      - name: Run tests
+        run: bundle exec rspec
+
+      - name: Run rubocop
+        run: bundle exec rubocop
