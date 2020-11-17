@@ -33,6 +33,10 @@ module DFEWizard
 
   private
 
+    def wizard_store
+      Store.new backing_store
+    end
+
     def load_wizard
       @wizard = wizard_class.new(wizard_store, params[:id])
     end
