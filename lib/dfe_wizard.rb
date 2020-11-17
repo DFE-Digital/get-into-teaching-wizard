@@ -7,6 +7,7 @@ require "dfe_wizard/version"
 require "dfe_wizard/store"
 require "dfe_wizard/step"
 require "dfe_wizard/base"
+require "dfe_wizard/controller"
 
 module DFEWizard
 end
