@@ -5,7 +5,7 @@ on:
     types: [assigned, opened, synchronize, reopened]
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test:
