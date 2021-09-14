@@ -9,12 +9,16 @@ module DFEWizard
         name.split("::").last.underscore
       end
 
+      def contains_personal_details?
+        false
+      end
+
       def title
         key.humanize
       end
     end
 
-    delegate :key, to: :class
+    delegate :key, :contains_personal_details?, to: :class
     delegate :title, to: :class
     alias_method :id, :key
 
@@ -30,6 +34,10 @@ module DFEWizard
       return false unless valid?
 
       persist_to_store
+    end
+
+    def exit?
+      !can_proceed?
     end
 
     def can_proceed?
@@ -50,6 +58,11 @@ module DFEWizard
       false
     end
 
+    def other_step(key_or_class)
+      key = key_or_class.respond_to?(:key) ? key_or_class.key : key_or_class.to_s
+      @wizard.find(key)
+    end
+
     def flash_error(message)
       errors.add(:base, message)
     end
@@ -59,7 +72,11 @@ module DFEWizard
       Hash[attributes.keys.zip([])].merge attributes
     end
 
-    private
+    def reviewable_answers
+      attributes
+    end
+
+  private
 
     def attributes_from_crm
       @store.fetch attributes.keys, source: :crm

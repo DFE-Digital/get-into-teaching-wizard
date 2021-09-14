@@ -9,8 +9,14 @@ describe DFEWizard::Step do
     validates :name, presence: true
   end
 
+  class StubWizard < DFEWizard::Base
+    self.steps = [FirstStep].freeze
+  end
+
   let(:attributes) { {} }
-  subject { FirstStep.new nil, wizardstore, attributes }
+  let(:wizard) { StubWizard.new(wizardstore, "first_step") }
+
+  subject { FirstStep.new wizard, wizardstore, attributes }
 
   describe ".key" do
     it { expect(described_class.key).to eql "step" }
@@ -20,6 +26,11 @@ describe DFEWizard::Step do
   describe ".title" do
     it { expect(described_class.title).to eql "Step" }
     it { expect(FirstStep.title).to eql "First step" }
+  end
+
+  describe ".contains_personal_details?" do
+    it { expect(described_class).not_to be_contains_personal_details }
+    it { expect(FirstStep).not_to be_contains_personal_details }
   end
 
   describe ".new" do
@@ -33,6 +44,12 @@ describe DFEWizard::Step do
     it { is_expected.to have_attributes skipped?: false }
     it { is_expected.to have_attributes optional?: false }
     it { is_expected.to have_attributes can_proceed?: true }
+    it { is_expected.to have_attributes exit?: false }
+  end
+
+  describe "#other_step" do
+    it { expect(subject.other_step(:first_step)).to be_kind_of(FirstStep) }
+    it { expect(subject.other_step(FirstStep)).to be_kind_of(FirstStep) }
   end
 
   describe "#skipped?" do
@@ -96,6 +113,16 @@ describe DFEWizard::Step do
       it { expect(result).to be false }
       it { is_expected.to have_attributes errors: hash_including(:name) }
     end
+  end
+
+  describe "#reviewable_answers" do
+    subject { instance.reviewable_answers }
+
+    let(:backingstore) { { "name" => "Joe" } }
+    let(:instance) { FirstStep.new nil, wizardstore, age: 35 }
+
+    it { is_expected.to include "name" => "Joe" }
+    it { is_expected.to include "age" => 35 }
   end
 
   describe "#export" do

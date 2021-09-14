@@ -245,15 +245,29 @@ describe DFEWizard::Base do
 
   describe "complete!" do
     subject { wizardclass.new wizardstore, "postcode" }
-    before { allow(subject).to receive(:valid?).and_return steps_valid }
+    before do
+      allow(subject).to receive(:valid?).and_return steps_valid
+      allow(subject).to receive(:can_proceed?).and_return steps_can_proceed
+    end
 
-    context "when valid" do
+    context "when valid and proceedable" do
       let(:steps_valid) { true }
+      let(:steps_can_proceed) { true }
+
       it { is_expected.to have_attributes complete!: true }
     end
 
-    context "when invalid" do
+    context "when proceedable but not valid" do
       let(:steps_valid) { false }
+      let(:steps_can_proceed) { true }
+
+      it { is_expected.to have_attributes complete!: false }
+    end
+
+    context "when valid but not proceedable" do
+      let(:steps_valid) { true }
+      let(:steps_can_proceed) { false }
+
       it { is_expected.to have_attributes complete!: false }
     end
   end
@@ -306,6 +320,25 @@ describe DFEWizard::Base do
       let(:backingstore) { { "name" => "test" } }
       subject { wizard.invalid_steps.map(&:key) }
       it { is_expected.to eql %w[postcode] }
+    end
+  end
+
+  describe "#reviewable_answers_by_step" do
+    subject { wizard.reviewable_answers_by_step }
+
+    it { is_expected.to include TestWizard::Name => { "name" => "Joe" } }
+    it { is_expected.to include TestWizard::Age => { "age" => 35 } }
+    it { is_expected.to include TestWizard::Postcode => { "postcode" => nil } }
+
+    context "with skipped step" do
+      before do
+        allow_any_instance_of(TestWizard::Age).to \
+          receive(:skipped?).and_return true
+      end
+
+      it { is_expected.to include TestWizard::Name => { "name" => "Joe" } }
+      it { is_expected.not_to include TestWizard::Age => { "age" => 35 } }
+      it { is_expected.to include TestWizard::Postcode => { "postcode" => nil } }
     end
   end
 

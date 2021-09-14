@@ -46,7 +46,7 @@ module DFEWizard
       @crm_data.clear
     end
 
-    private
+  private
 
     def store(source)
       case source
