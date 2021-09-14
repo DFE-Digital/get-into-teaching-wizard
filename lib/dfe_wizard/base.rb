@@ -1,9 +1,16 @@
-# frozen_string_literal: true
-
 module DFEWizard
   class UnknownStep < RuntimeError; end
+  class MagicLinkTokenNotSupportedError < RuntimeError; end
+  class AccessTokenNotSupportedError < RuntimeError; end
 
   class Base
+    module Auth
+      ACCESS_TOKEN = 0
+      MAGIC_LINK_TOKEN = 1
+    end
+
+    MATCHBACK_ATTRS = %i[candidate_id qualification_id].freeze
+
     class_attribute :steps
 
     class << self
@@ -88,6 +95,14 @@ module DFEWizard
       steps[(key_index(key) + 1)..].to_a.map(&:key)
     end
 
+    def magic_link_token_used?
+      @store["auth_method"] == Auth::MAGIC_LINK_TOKEN
+    end
+
+    def access_token_used?
+      @store["auth_method"] == Auth::ACCESS_TOKEN
+    end
+
     def earlier_keys(key = current_key)
       index = key_index(key)
       return [] unless index.positive?
@@ -96,10 +111,41 @@ module DFEWizard
     end
 
     def export_data
-      all_steps.map(&:export).reduce({}, :merge)
+      matchback_data = @store.fetch(MATCHBACK_ATTRS)
+      # Ensure skipped step data is overwritten by shown step data.
+      # Important as two steps can write to the same attribute.
+      skipped_steps_first = all_steps.partition(&:skipped?).flatten
+      step_data = skipped_steps_first.map(&:export).reduce({}, :merge)
+      step_data.merge!(matchback_data)
+    end
+
+    def process_magic_link_token(token)
+      response = exchange_magic_link_token(token)
+      prepopulate_store(response, Auth::MAGIC_LINK_TOKEN)
+    end
+
+    def process_access_token(token, request)
+      response = exchange_access_token(token, request)
+      prepopulate_store(response, Auth::ACCESS_TOKEN)
+    end
+
+  protected
+
+    def exchange_magic_link_token(_token)
+      raise(MagicLinkTokenNotSupportedError)
+    end
+
+    def exchange_access_token(_timed_one_time_password, _request)
+      raise(AccessTokenNotSupportedError)
     end
 
   private
+
+    def prepopulate_store(response, auth_method)
+      hash = response.to_hash.transform_keys { |k| k.to_s.underscore }
+      @store.persist_crm(hash)
+      @store["auth_method"] = auth_method
+    end
 
     def all_steps
       step_keys.map(&method(:find))

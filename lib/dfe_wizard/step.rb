@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 module DFEWizard
   class Step
-    include ::ActiveModel::Model
-    include ::ActiveModel::Attributes
-    include ::ActiveModel::Validations::Callbacks
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+    include ActiveModel::Validations::Callbacks
 
     class << self
       def key
@@ -43,16 +41,29 @@ module DFEWizard
     end
 
     def skipped?
+      return false unless optional?
+
+      @store.fetch(attribute_names, source: :crm).values.all?(&:present?)
+    end
+
+    def optional?
       false
     end
 
-    def export
-      return {} if skipped?
-
-      Hash[attributes.keys.zip([])].merge attributes_from_store
+    def flash_error(message)
+      errors.add(:base, message)
     end
 
-  private
+    def export
+      attributes = skipped? ? attributes_from_crm : attributes_from_store
+      Hash[attributes.keys.zip([])].merge attributes
+    end
+
+    private
+
+    def attributes_from_crm
+      @store.fetch attributes.keys, source: :crm
+    end
 
     def attributes_from_store
       @store.fetch attributes.keys

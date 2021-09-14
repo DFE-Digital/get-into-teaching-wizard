@@ -9,7 +9,8 @@ require "dfe_wizard"
 
 shared_context "with wizard store" do
   let(:backingstore) { { "name" => "Joe", "age" => 35 } }
-  let(:wizardstore) { DFEWizard::Store.new backingstore }
+  let(:crm_backingstore) { {} }
+  let(:wizardstore) { DFEWizard::Store.new backingstore, crm_backingstore }
 end
 
 shared_context "with wizard step" do
@@ -31,6 +32,12 @@ class TestWizard < DFEWizard::Base
     validates :name, presence: true
   end
 
+  # To simulate two steps writing to the same attribute.
+  class OtherAge < DFEWizard::Step
+    attribute :age, :integer
+    validates :age, presence: false
+  end
+
   class Age < DFEWizard::Step
     attribute :age, :integer
     validates :age, presence: true
@@ -41,5 +48,5 @@ class TestWizard < DFEWizard::Base
     validates :postcode, presence: true
   end
 
-  self.steps = [Name, Age, Postcode].freeze
+  self.steps = [Name, OtherAge, Age, Postcode].freeze
 end
