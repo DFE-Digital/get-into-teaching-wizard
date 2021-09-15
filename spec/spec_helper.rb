@@ -14,8 +14,9 @@ shared_context "with wizard store" do
 end
 
 shared_context "with wizard step" do
-  include_context "with wizard store"
   subject { instance }
+
+  include_context "with wizard store"
 
   let(:attributes) { {} }
   let(:instance) { described_class.new nil, wizardstore, attributes }

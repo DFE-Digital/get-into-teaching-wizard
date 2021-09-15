@@ -1,6 +1,8 @@
 require "spec_helper"
 
 describe DFEWizard::Step do
+  subject { FirstStep.new wizard, wizardstore, attributes }
+
   include_context "with wizard store"
 
   class FirstStep < DFEWizard::Step
@@ -15,8 +17,6 @@ describe DFEWizard::Step do
 
   let(:attributes) { {} }
   let(:wizard) { StubWizard.new(wizardstore, "first_step") }
-
-  subject { FirstStep.new wizard, wizardstore, attributes }
 
   describe ".key" do
     it { expect(described_class.key).to eql "step" }
@@ -35,6 +35,7 @@ describe DFEWizard::Step do
 
   describe ".new" do
     let(:attributes) { { age: "20" } }
+
     it { is_expected.to be_instance_of FirstStep }
     it { is_expected.to have_attributes key: "first_step" }
     it { is_expected.to have_attributes id: "first_step" }
@@ -54,7 +55,7 @@ describe DFEWizard::Step do
 
   describe "#skipped?" do
     context "when optional" do
-      before { expect(subject).to receive(:optional?) { true } }
+      before { expect(subject).to receive(:optional?).and_return(true) }
 
       context "when values for all attributes are present in the CRM" do
         before do
@@ -76,7 +77,7 @@ describe DFEWizard::Step do
     end
 
     context "when not optional" do
-      before { expect(subject).to receive(:optional?) { false } }
+      before { expect(subject).to receive(:optional?).and_return(false) }
 
       context "when values for all attributes are present in the CRM" do
         before do
@@ -84,7 +85,7 @@ describe DFEWizard::Step do
           crm_backingstore["age"] = 18
         end
 
-        it { is_expected.to_not be_skipped }
+        it { is_expected.not_to be_skipped }
       end
     end
   end
@@ -126,9 +127,11 @@ describe DFEWizard::Step do
   end
 
   describe "#export" do
+    subject { instance.export }
+
     let(:backingstore) { { "name" => "Joe" } }
     let(:instance) { FirstStep.new nil, wizardstore, age: 35 }
-    subject { instance.export }
+
     it { is_expected.to include "name" => "Joe" }
     it { is_expected.to include "age" => nil } # should only export persisted data
 

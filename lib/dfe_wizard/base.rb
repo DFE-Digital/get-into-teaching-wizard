@@ -1,6 +1,8 @@
 module DFEWizard
   class UnknownStep < RuntimeError; end
+
   class MagicLinkTokenNotSupportedError < RuntimeError; end
+
   class AccessTokenNotSupportedError < RuntimeError; end
 
   class Base
