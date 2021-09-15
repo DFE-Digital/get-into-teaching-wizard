@@ -34,7 +34,7 @@ module DFEWizard
   private
 
     def wizard_store
-      Store.new app_store, crm_store
+      Store.new new_store, preexisting_store
     end
 
     def load_wizard

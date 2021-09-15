@@ -51,7 +51,7 @@ module DFEWizard
     def skipped?
       return false unless optional?
 
-      @store.fetch(attribute_names, source: :crm).values.all?(&:present?)
+      @store.fetch(attribute_names, source: :preexisting).values.all?(&:present?)
     end
 
     def optional?
@@ -68,7 +68,7 @@ module DFEWizard
     end
 
     def export
-      attributes = skipped? ? attributes_from_crm : attributes_from_store
+      attributes = skipped? ? preexisting_attributes : attributes_from_store
       Hash[attributes.keys.zip([])].merge attributes
     end
 
@@ -78,8 +78,8 @@ module DFEWizard
 
   private
 
-    def attributes_from_crm
-      @store.fetch attributes.keys, source: :crm
+    def preexisting_attributes
+      @store.fetch attributes.keys, source: :preexisting
     end
 
     def attributes_from_store

@@ -3,9 +3,9 @@ require "spec_helper"
 describe DFEWizard::Store do
   subject { instance }
 
-  let(:app_data) { { "first_name" => "Joe", "last_name" => nil, "age" => 20 } }
-  let(:crm_data) { { "first_name" => "James", "last_name" => "Doe", "region" => "Manchester" } }
-  let(:instance) { described_class.new app_data, crm_data }
+  let(:new_data) { { "first_name" => "Joe", "last_name" => nil, "age" => 20 } }
+  let(:preexisting_data) { { "first_name" => "James", "last_name" => "Doe", "region" => "Manchester" } }
+  let(:instance) { described_class.new new_data, preexisting_data }
 
   describe ".new" do
     context "with valid source data" do
@@ -14,16 +14,16 @@ describe DFEWizard::Store do
       it { is_expected.to respond_to :[]= }
     end
 
-    context "with invalid app_data source" do
-      subject { described_class.new nil, crm_data }
+    context "with invalid new_data source" do
+      subject { described_class.new nil, preexisting_data }
 
       it "raises an InvalidBackingStore" do
         expect { subject }.to raise_exception(DFEWizard::Store::InvalidBackingStore)
       end
     end
 
-    context "with invalid crm_data source" do
-      subject { described_class.new app_data, nil }
+    context "with invalid preexisting_data source" do
+      subject { described_class.new preexisting_data, nil }
 
       it "raises an InvalidBackingStore" do
         expect { subject }.to raise_exception(DFEWizard::Store::InvalidBackingStore)
@@ -32,25 +32,25 @@ describe DFEWizard::Store do
   end
 
   describe "#[]" do
-    context "when the attribute exists in app and crm data" do
+    context "when the attribute exists in new and preexisting data" do
       subject { instance["first_name"] }
 
       it { is_expected.to eq("Joe") }
     end
 
-    context "when the attribute is nil in the app data and not nil in the crm data" do
+    context "when the attribute is nil in the new data and not nil in the preexisting data" do
       subject { instance["last_name"] }
 
       it { is_expected.to be_nil }
     end
 
-    context "when the attribute exists in only the app data" do
+    context "when the attribute exists in only the new data" do
       subject { instance["age"] }
 
       it { is_expected.to eq(20) }
     end
 
-    context "when the attribute exists in only the crm data" do
+    context "when the attribute exists in only the preexisting data" do
       subject { instance["region"] }
 
       it { is_expected.to eq("Manchester") }
@@ -64,9 +64,9 @@ describe DFEWizard::Store do
     end
   end
 
-  describe "#crm" do
-    it { expect(instance.crm(:first_name)).to eq("James") }
-    it { expect(instance.crm(:age)).to be_nil }
+  describe "#preexisting" do
+    it { expect(instance.preexisting(:first_name)).to eq("James") }
+    it { expect(instance.preexisting(:age)).to be_nil }
   end
 
   describe "#fetch" do
@@ -79,14 +79,14 @@ describe DFEWizard::Store do
         it { is_expected.to eql({ "first_name" => "Joe", "last_name" => nil, "age" => 20, "region" => "Manchester" }) }
       end
 
-      context "when source is app" do
-        let(:source) { :app }
+      context "when source is new" do
+        let(:source) { :new }
 
         it { is_expected.to eql({ "first_name" => "Joe", "last_name" => nil, "age" => 20, "region" => nil }) }
       end
 
-      context "when source is crm" do
-        let(:source) { :crm }
+      context "when source is preexisting" do
+        let(:source) { :preexisting }
 
         it { is_expected.to eql({ "first_name" => "James", "age" => nil, "last_name" => "Doe", "region" => "Manchester" }) }
       end
@@ -115,12 +115,12 @@ describe DFEWizard::Store do
     it { expect(instance["age"]).to eq(20) }
   end
 
-  describe "#persist_crm" do
-    subject! { instance.persist_crm({ first_name: "Jim" }) }
+  describe "#persist_preexisting" do
+    subject! { instance.persist_preexisting({ first_name: "Jim" }) }
 
     it { is_expected.to be_truthy }
-    it { expect(instance.crm("first_name")).to eq("Jim") }
-    it { expect(instance.crm("age")).to be_nil }
+    it { expect(instance.preexisting("first_name")).to eq("Jim") }
+    it { expect(instance.preexisting("age")).to be_nil }
   end
 
   describe "#purge!" do

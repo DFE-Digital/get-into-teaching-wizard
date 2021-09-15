@@ -4,12 +4,12 @@ module DFEWizard
 
     delegate :keys, :to_h, :to_hash, to: :combined_data
 
-    def initialize(app_data, crm_data)
-      stores = [app_data, crm_data]
+    def initialize(new_data, preexisting_data)
+      stores = [new_data, preexisting_data]
       raise InvalidBackingStore unless stores.all? { |s| s.respond_to?(:[]=) }
 
-      @app_data = app_data
-      @crm_data = crm_data
+      @new_data = new_data
+      @preexisting_data = preexisting_data
     end
 
     def [](key)
@@ -17,11 +17,11 @@ module DFEWizard
     end
 
     def []=(key, value)
-      @app_data[key.to_s] = value
+      @new_data[key.to_s] = value
     end
 
-    def crm(key)
-      @crm_data[key.to_s]
+    def preexisting(key)
+      @preexisting_data[key.to_s]
     end
 
     def fetch(*keys, source: :both)
@@ -30,34 +30,34 @@ module DFEWizard
     end
 
     def persist(attributes)
-      @app_data.merge!(attributes.stringify_keys)
+      @new_data.merge!(attributes.stringify_keys)
 
       true
     end
 
-    def persist_crm(attributes)
-      @crm_data.merge!(attributes.stringify_keys)
+    def persist_preexisting(attributes)
+      @preexisting_data.merge!(attributes.stringify_keys)
 
       true
     end
 
     def purge!
-      @app_data.clear
-      @crm_data.clear
+      @new_data.clear
+      @preexisting_data.clear
     end
 
   private
 
     def store(source)
       case source
-      when :crm then @crm_data
-      when :app then @app_data
+      when :new then @new_data
+      when :preexisting then @preexisting_data
       else combined_data
       end
     end
 
     def combined_data
-      @crm_data.merge(@app_data)
+      @preexisting_data.merge(@new_data)
     end
   end
 end

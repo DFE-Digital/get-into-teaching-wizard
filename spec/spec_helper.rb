@@ -9,8 +9,8 @@ require "dfe_wizard"
 
 shared_context "with wizard store" do
   let(:backingstore) { { "name" => "Joe", "age" => 35 } }
-  let(:crm_backingstore) { {} }
-  let(:wizardstore) { DFEWizard::Store.new backingstore, crm_backingstore }
+  let(:preexisting_backingstore) { {} }
+  let(:wizardstore) { DFEWizard::Store.new backingstore, preexisting_backingstore }
 end
 
 shared_context "with wizard step" do

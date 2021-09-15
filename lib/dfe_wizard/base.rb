@@ -159,7 +159,7 @@ module DFEWizard
 
     def prepopulate_store(response, auth_method)
       hash = response.to_hash.transform_keys { |k| k.to_s.underscore }
-      @store.persist_crm(hash)
+      @store.persist_preexisting(hash)
       @store["auth_method"] = auth_method
     end
 

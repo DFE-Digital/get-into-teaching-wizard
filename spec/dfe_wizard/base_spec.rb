@@ -144,7 +144,7 @@ describe DFEWizard::Base do
 
     subject! do
       wizard.process_access_token(token, {})
-      wizardstore.fetch(%w[candidate_id first_name last_name email], source: :crm)
+      wizardstore.fetch(%w[candidate_id first_name last_name email], source: :preexisting)
     end
 
     it { is_expected.to eq response_hash }
@@ -388,8 +388,8 @@ describe DFEWizard::Base do
       it { is_expected.to include "postcode" => nil }
     end
 
-    context "when a skipped step preceeds a shown step using the same attribute and crm data is present for the field" do
-      let(:crm_backingstore) { { "age" => 22 } }
+    context "when a skipped step preceeds a shown step using the same attribute and preexisting data is present for the field" do
+      let(:preexisting_backingstore) { { "age" => 22 } }
       let(:backingstore) { { "age" => 33 } }
 
       before do
@@ -400,7 +400,7 @@ describe DFEWizard::Base do
       it { is_expected.to include "age" => 33 }
 
       context "when exporting the skipped step" do
-        it "contains the crm value" do
+        it "contains the preexisting value" do
           skipped_step = wizard.find(TestWizard::OtherAge.key)
           expect(skipped_step.export["age"]).to eq(22)
         end

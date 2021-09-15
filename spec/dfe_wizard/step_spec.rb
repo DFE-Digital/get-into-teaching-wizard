@@ -57,19 +57,19 @@ describe DFEWizard::Step do
     context "when optional" do
       before { allow(subject).to receive(:optional?).and_return(true) }
 
-      context "when values for all attributes are present in the CRM" do
+      context "when values for all attributes are present in the preexisting backingstore" do
         before do
-          crm_backingstore["name"] = "John"
-          crm_backingstore["age"] = 18
+          preexisting_backingstore["name"] = "John"
+          preexisting_backingstore["age"] = 18
         end
 
         it { is_expected.to be_skipped }
       end
 
-      context "when values for some attributes are present in the CRM" do
+      context "when values for some attributes are present in the preexisting backingstore" do
         before do
-          crm_backingstore["name"] = "John"
-          crm_backingstore["age"] = nil
+          preexisting_backingstore["name"] = "John"
+          preexisting_backingstore["age"] = nil
         end
 
         it { is_expected.not_to be_skipped }
@@ -79,10 +79,10 @@ describe DFEWizard::Step do
     context "when not optional" do
       before { allow(subject).to receive(:optional?).and_return(false) }
 
-      context "when values for all attributes are present in the CRM" do
+      context "when values for all attributes are present in the preexisting backingstore" do
         before do
-          crm_backingstore["name"] = "John"
-          crm_backingstore["age"] = 18
+          preexisting_backingstore["name"] = "John"
+          preexisting_backingstore["age"] = 18
         end
 
         it { is_expected.not_to be_skipped }
@@ -136,7 +136,7 @@ describe DFEWizard::Step do
     it { is_expected.to include "age" => nil } # should only export persisted data
 
     context "when the step is skipped" do
-      let(:crm_backingstore) { { "name" => "Jimmy" } }
+      let(:preexisting_backingstore) { { "name" => "Jimmy" } }
 
       before { allow(instance).to receive(:skipped?).and_return(true) }
 
