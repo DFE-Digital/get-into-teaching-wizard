@@ -14,13 +14,16 @@ RSpec/ImplicitSubject:
 RSpec/AnyInstance:
   Enabled: false
 
-Rspec/NamedSubject:
+RSpec/NamedSubject:
   Enabled: false
 
-Rspec/SubjectStub:
+RSpec/SubjectStub:
   Enabled: false
 
-Rspec/LeakyConstantDeclaration:
+RSpec/LeakyConstantDeclaration:
+  Enabled: false
+
+RSpec/LeadingSubject:
   Enabled: false
 
 RSpec/LeadingSubject:

@@ -90,11 +90,6 @@ describe DFEWizard::Base do
   end
 
   describe "#process_magic_link_token" do
-    subject! do
-      wizard.process_magic_link_token(token)
-      wizardstore.fetch(%w[candidate_id first_name last_name email])
-    end
-
     let(:token) { "magic-link-token" }
     let(:stub_response) do
       {
@@ -109,6 +104,11 @@ describe DFEWizard::Base do
     before do
       allow_any_instance_of(TestWizard).to \
         receive(:exchange_magic_link_token).with(token) { stub_response }
+    end
+
+    subject! do
+      wizard.process_magic_link_token(token)
+      wizardstore.fetch(%w[candidate_id first_name last_name email])
     end
 
     it { is_expected.to eq response_hash }
@@ -126,11 +126,6 @@ describe DFEWizard::Base do
   end
 
   describe "#process_access_token" do
-    subject! do
-      wizard.process_access_token(token, {})
-      wizardstore.fetch(%w[candidate_id first_name last_name email], source: :crm)
-    end
-
     let(:token) { "access-token" }
     let(:stub_response) do
       {
@@ -145,6 +140,11 @@ describe DFEWizard::Base do
     before do
       allow_any_instance_of(TestWizard).to \
         receive(:exchange_access_token).with(token, {}) { stub_response }
+    end
+
+    subject! do
+      wizard.process_access_token(token, {})
+      wizardstore.fetch(%w[candidate_id first_name last_name email], source: :crm)
     end
 
     it { is_expected.to eq response_hash }
