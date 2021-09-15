@@ -11,8 +11,6 @@ module DFEWizard
       MAGIC_LINK_TOKEN = 1
     end
 
-    MATCHBACK_ATTRS = %i[candidate_id qualification_id adviser_status_id].freeze
-
     class_attribute :steps
 
     class << self
@@ -48,6 +46,8 @@ module DFEWizard
 
       @current_key = current_key
     end
+
+    def matchback_attributes; end
 
     def find(key)
       step(key).new self, @store
@@ -121,7 +121,7 @@ module DFEWizard
     end
 
     def export_data
-      matchback_data = @store.fetch(MATCHBACK_ATTRS)
+      matchback_data = @store.fetch(matchback_attributes)
       # Ensure skipped step data is overwritten by shown step data.
       # Important as two steps can write to the same attribute.
       skipped_steps_first = all_steps.partition(&:skipped?).flatten

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "simplecov"
 SimpleCov.start do
   add_filter "/spec/"
@@ -50,4 +48,8 @@ class TestWizard < DFEWizard::Base
   end
 
   self.steps = [Name, OtherAge, Age, Postcode].freeze
+
+  def matchback_attributes
+    %i[candidate_id qualification_id adviser_status_id].freeze
+  end
 end
