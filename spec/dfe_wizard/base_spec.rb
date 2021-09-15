@@ -319,12 +319,12 @@ describe DFEWizard::Base do
 
     let(:current_step) { "name" }
 
-    context "for the first step" do
+    context "when first step" do
       it { is_expected.to have_attributes first_step?: true }
       it { is_expected.to have_attributes next_key: "postcode" }
     end
 
-    context "for the last step" do
+    context "when last step" do
       let(:current_step) { "postcode" }
 
       it { is_expected.to have_attributes last_step?: true }
