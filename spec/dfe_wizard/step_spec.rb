@@ -55,7 +55,7 @@ describe DFEWizard::Step do
 
   describe "#skipped?" do
     context "when optional" do
-      before { expect(subject).to receive(:optional?).and_return(true) }
+      before { allow(subject).to receive(:optional?).and_return(true) }
 
       context "when values for all attributes are present in the CRM" do
         before do
@@ -77,7 +77,7 @@ describe DFEWizard::Step do
     end
 
     context "when not optional" do
-      before { expect(subject).to receive(:optional?).and_return(false) }
+      before { allow(subject).to receive(:optional?).and_return(false) }
 
       context "when values for all attributes are present in the CRM" do
         before do
@@ -138,7 +138,7 @@ describe DFEWizard::Step do
     context "when the step is skipped" do
       let(:crm_backingstore) { { "name" => "Jimmy" } }
 
-      before { expect(instance).to receive(:skipped?) { true } }
+      before { allow(instance).to receive(:skipped?).and_return(true) }
 
       it { is_expected.to include "name" => "Jimmy" }
       it { is_expected.to include "age" => nil } # should only export persisted data
