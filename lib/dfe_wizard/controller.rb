@@ -34,7 +34,7 @@ module DFEWizard
   private
 
     def wizard_store
-      Store.new backing_store
+      Store.new new_store, preexisting_store
     end
 
     def load_wizard
@@ -55,8 +55,8 @@ module DFEWizard
       end
     end
 
-    def first_step_path
-      step_path(wizard_class.steps.first.key)
+    def first_step_path(opts = {})
+      step_path(wizard_class.steps.first.key, opts)
     end
 
     def completed_step_path
@@ -64,7 +64,7 @@ module DFEWizard
     end
 
     def step_params
-      params.require(step_param_key).permit @current_step.attributes.keys
+      params.fetch(step_param_key, {}).permit @current_step.attributes.keys
     end
 
     def step_param_key

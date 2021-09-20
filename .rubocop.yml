@@ -13,3 +13,21 @@ RSpec/ImplicitSubject:
 
 RSpec/AnyInstance:
   Enabled: false
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/SubjectStub:
+  Enabled: false
+
+RSpec/LeakyConstantDeclaration:
+  Enabled: false
+
+RSpec/LeadingSubject:
+  Enabled: false
+
+RSpec/LeadingSubject:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 6

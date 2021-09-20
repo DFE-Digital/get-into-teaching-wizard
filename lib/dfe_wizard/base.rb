@@ -1,9 +1,16 @@
-# frozen_string_literal: true
-
 module DFEWizard
   class UnknownStep < RuntimeError; end
 
+  class MagicLinkTokenNotSupportedError < RuntimeError; end
+
+  class AccessTokenNotSupportedError < RuntimeError; end
+
   class Base
+    module Auth
+      ACCESS_TOKEN = 0
+      MAGIC_LINK_TOKEN = 1
+    end
+
     class_attribute :steps
 
     class << self
@@ -29,8 +36,8 @@ module DFEWizard
     end
 
     delegate :step, :key_index, :indexed_steps, :step_keys, to: :class
-    delegate :can_proceed?, to: :find_current_step
-    attr_reader :current_key
+    delegate :can_proceed?, to: :find_current_step, prefix: :step
+    attr_reader :current_key, :completion_attributes
 
     def initialize(store, current_key)
       @store = store
@@ -39,6 +46,8 @@ module DFEWizard
 
       @current_key = current_key
     end
+
+    def matchback_attributes; end
 
     def find(key)
       step(key).new self, @store
@@ -72,8 +81,12 @@ module DFEWizard
       active_steps.all?(&:valid?)
     end
 
+    def can_proceed?
+      active_steps.all?(&:can_proceed?)
+    end
+
     def complete!
-      last_step? && valid?
+      last_step? && valid? && can_proceed?
     end
 
     def invalid_steps
@@ -84,8 +97,20 @@ module DFEWizard
       active_steps.find(&:invalid?)
     end
 
+    def first_exit_step
+      active_steps.find(&:exit?)
+    end
+
     def later_keys(key = current_key)
       steps[(key_index(key) + 1)..].to_a.map(&:key)
+    end
+
+    def magic_link_token_used?
+      @store["auth_method"] == Auth::MAGIC_LINK_TOKEN
+    end
+
+    def access_token_used?
+      @store["auth_method"] == Auth::ACCESS_TOKEN
     end
 
     def earlier_keys(key = current_key)
@@ -96,10 +121,47 @@ module DFEWizard
     end
 
     def export_data
-      all_steps.map(&:export).reduce({}, :merge)
+      matchback_data = @store.fetch(matchback_attributes)
+      # Ensure skipped step data is overwritten by shown step data.
+      # Important as two steps can write to the same attribute.
+      skipped_steps_first = all_steps.partition(&:skipped?).flatten
+      step_data = skipped_steps_first.map(&:export).reduce({}, :merge)
+      step_data.merge!(matchback_data)
+    end
+
+    def reviewable_answers_by_step
+      all_steps.reject(&:skipped?).each_with_object({}) do |step, hash|
+        hash[step.class] = step.reviewable_answers
+      end
+    end
+
+    def process_magic_link_token(token)
+      response = exchange_magic_link_token(token)
+      prepopulate_store(response, Auth::MAGIC_LINK_TOKEN)
+    end
+
+    def process_access_token(token, request)
+      response = exchange_access_token(token, request)
+      prepopulate_store(response, Auth::ACCESS_TOKEN)
+    end
+
+  protected
+
+    def exchange_magic_link_token(_token)
+      raise(MagicLinkTokenNotSupportedError)
+    end
+
+    def exchange_access_token(_timed_one_time_password, _request)
+      raise(AccessTokenNotSupportedError)
     end
 
   private
+
+    def prepopulate_store(response, auth_method)
+      hash = response.to_hash.transform_keys { |k| k.to_s.underscore }
+      @store.persist_preexisting(hash)
+      @store["auth_method"] = auth_method
+    end
 
     def all_steps
       step_keys.map(&method(:find))

@@ -1,14 +1,36 @@
-# frozen_string_literal: true
-
 require "spec_helper"
 
 describe DFEWizard::Base do
-  include_context "with wizard store"
-
   subject { wizard }
+
+  include_context "with wizard store"
 
   let(:wizardclass) { TestWizard }
   let(:wizard) { wizardclass.new wizardstore, "age" }
+
+  describe "#access_token_used?" do
+    subject { wizard }
+
+    it { is_expected.not_to be_access_token_used }
+
+    context "when auth method is set" do
+      before { wizardstore["auth_method"] = described_class::Auth::ACCESS_TOKEN }
+
+      it { is_expected.to be_access_token_used }
+    end
+  end
+
+  describe "#magic_link_token_used?" do
+    subject { wizard }
+
+    it { is_expected.not_to be_magic_link_token_used }
+
+    context "when auth method is set" do
+      before { wizardstore["auth_method"] = described_class::Auth::MAGIC_LINK_TOKEN }
+
+      it { is_expected.to be_magic_link_token_used }
+    end
+  end
 
   describe ".indexed_steps" do
     subject { wizardclass.indexed_steps }
@@ -16,6 +38,7 @@ describe DFEWizard::Base do
     it do
       is_expected.to eql \
         "name" => TestWizard::Name,
+        "other_age" => TestWizard::OtherAge,
         "age" => TestWizard::Age,
         "postcode" => TestWizard::Postcode
     end
@@ -34,7 +57,7 @@ describe DFEWizard::Base do
 
   describe ".key_index" do
     it "will return index for known step" do
-      expect(wizardclass.key_index("age")).to be 1
+      expect(wizardclass.key_index("age")).to be 2
     end
 
     it "will raise exception for unknown step" do
@@ -46,7 +69,7 @@ describe DFEWizard::Base do
   describe ".step_keys" do
     subject { wizardclass.step_keys }
 
-    it { is_expected.to eql %w[name age postcode] }
+    it { is_expected.to eql %w[name other_age age postcode] }
   end
 
   describe ".first_key" do
@@ -56,13 +79,85 @@ describe DFEWizard::Base do
   end
 
   describe ".new" do
-    it "will return instance for known step" do
+    it "returns instance for known step" do
       expect(wizardclass.new(wizardstore, "name")).to be_instance_of wizardclass
     end
 
-    it "will raise exception for unknown step" do
+    it "raises exception for unknown step" do
       expect { wizardclass.new wizardstore, "unknown" }.to \
         raise_exception DFEWizard::UnknownStep
+    end
+  end
+
+  describe "#process_magic_link_token" do
+    let(:token) { "magic-link-token" }
+    let(:stub_response) do
+      {
+        candidateId: "abc123",
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@doe.com",
+      }
+    end
+    let(:response_hash) { stub_response.to_hash.transform_keys { |k| k.to_s.underscore } }
+
+    before do
+      allow_any_instance_of(TestWizard).to \
+        receive(:exchange_magic_link_token).with(token) { stub_response }
+    end
+
+    subject! do
+      wizard.process_magic_link_token(token)
+      wizardstore.fetch(%w[candidate_id first_name last_name email])
+    end
+
+    it { is_expected.to eq response_hash }
+    it { expect(wizard).to be_magic_link_token_used }
+
+    context "when the wizard does not implement exchange_magic_link_token" do
+      before do
+        allow_any_instance_of(TestWizard).to \
+          receive(:exchange_magic_link_token).with(token)
+                                             .and_call_original
+      end
+
+      it { expect { wizard.process_magic_link_token(token) }.to raise_error(DFEWizard::MagicLinkTokenNotSupportedError) }
+    end
+  end
+
+  describe "#process_access_token" do
+    let(:token) { "access-token" }
+    let(:stub_response) do
+      {
+        candidateId: "abc123",
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@doe.com",
+      }
+    end
+    let(:response_hash) { stub_response.to_hash.transform_keys { |k| k.to_s.underscore } }
+
+    before do
+      allow_any_instance_of(TestWizard).to \
+        receive(:exchange_access_token).with(token, {}) { stub_response }
+    end
+
+    subject! do
+      wizard.process_access_token(token, {})
+      wizardstore.fetch(%w[candidate_id first_name last_name email], source: :preexisting)
+    end
+
+    it { is_expected.to eq response_hash }
+    it { expect(wizard).to be_access_token_used }
+
+    context "when the wizard does not implement exchange_access_token" do
+      before do
+        allow_any_instance_of(TestWizard).to \
+          receive(:exchange_access_token).with(token, {})
+                                         .and_call_original
+      end
+
+      it { expect { wizard.exchange_access_token(token, {}) }.to raise_error(DFEWizard::AccessTokenNotSupportedError) }
     end
   end
 
@@ -81,13 +176,13 @@ describe DFEWizard::Base do
   describe "#later_keys" do
     subject { wizardclass.new(wizardstore, "name").later_keys }
 
-    it { is_expected.to eql %w[age postcode] }
+    it { is_expected.to eql %w[other_age age postcode] }
   end
 
   describe "#earlier_keys" do
     subject { wizardclass.new(wizardstore, "postcode").earlier_keys }
 
-    it { is_expected.to eql %w[name age] }
+    it { is_expected.to eql %w[name other_age age] }
   end
 
   describe "#find" do
@@ -107,7 +202,7 @@ describe DFEWizard::Base do
     context "when there are earlier steps" do
       subject { wizard.previous_key("age") }
 
-      it { is_expected.to eql "name" }
+      it { is_expected.to eql "other_age" }
     end
 
     context "when there are no earlier steps" do
@@ -119,7 +214,7 @@ describe DFEWizard::Base do
     context "when no key supplied" do
       subject { wizard.previous_key }
 
-      it { is_expected.to eql "name" }
+      it { is_expected.to eql "other_age" }
     end
   end
 
@@ -167,20 +262,30 @@ describe DFEWizard::Base do
   end
 
   describe "complete!" do
-    subject { instance }
+    subject { wizardclass.new wizardstore, "postcode" }
 
-    let(:instance) { wizardclass.new wizardstore, "postcode" }
+    before do
+      allow(subject).to receive(:valid?).and_return steps_valid
+      allow(subject).to receive(:can_proceed?).and_return steps_can_proceed
+    end
 
-    before { allow(instance).to receive(:valid?).and_return steps_valid }
-
-    context "when valid" do
+    context "when valid and proceedable" do
       let(:steps_valid) { true }
+      let(:steps_can_proceed) { true }
 
       it { is_expected.to have_attributes complete!: true }
     end
 
-    context "when invalid" do
+    context "when proceedable but not valid" do
       let(:steps_valid) { false }
+      let(:steps_can_proceed) { true }
+
+      it { is_expected.to have_attributes complete!: false }
+    end
+
+    context "when valid but not proceedable" do
+      let(:steps_valid) { true }
+      let(:steps_can_proceed) { false }
 
       it { is_expected.to have_attributes complete!: false }
     end
@@ -208,16 +313,18 @@ describe DFEWizard::Base do
     before do
       allow_any_instance_of(TestWizard::Age).to \
         receive(:skipped?).and_return true
+      allow_any_instance_of(TestWizard::OtherAge).to \
+        receive(:skipped?).and_return true
     end
 
     let(:current_step) { "name" }
 
-    context "with the first step" do
+    context "when first step" do
       it { is_expected.to have_attributes first_step?: true }
       it { is_expected.to have_attributes next_key: "postcode" }
     end
 
-    context "with the last step" do
+    context "when last step" do
       let(:current_step) { "postcode" }
 
       it { is_expected.to have_attributes last_step?: true }
@@ -244,6 +351,25 @@ describe DFEWizard::Base do
     end
   end
 
+  describe "#reviewable_answers_by_step" do
+    subject { wizard.reviewable_answers_by_step }
+
+    it { is_expected.to include TestWizard::Name => { "name" => "Joe" } }
+    it { is_expected.to include TestWizard::Age => { "age" => 35 } }
+    it { is_expected.to include TestWizard::Postcode => { "postcode" => nil } }
+
+    context "with skipped step" do
+      before do
+        allow_any_instance_of(TestWizard::Age).to \
+          receive(:skipped?).and_return true
+      end
+
+      it { is_expected.to include TestWizard::Name => { "name" => "Joe" } }
+      it { is_expected.not_to include TestWizard::Age => { "age" => 35 } }
+      it { is_expected.to include TestWizard::Postcode => { "postcode" => nil } }
+    end
+  end
+
   describe "#export_data" do
     subject { wizard.export_data }
 
@@ -253,13 +379,42 @@ describe DFEWizard::Base do
 
     context "with skipped step" do
       before do
-        allow_any_instance_of(TestWizard::Age).to \
+        allow_any_instance_of(TestWizard::Name).to \
           receive(:skipped?).and_return true
       end
 
-      it { is_expected.to include "name" => "Joe" }
-      it { is_expected.not_to include "age" }
+      it { is_expected.to include "name" => nil }
+      it { is_expected.to include "age" => 35 }
       it { is_expected.to include "postcode" => nil }
+    end
+
+    context "when a skipped step preceeds a shown step using the same attribute and preexisting data is present for the field" do
+      let(:preexisting_backingstore) { { "age" => 22 } }
+      let(:backingstore) { { "age" => 33 } }
+
+      before do
+        allow_any_instance_of(TestWizard::OtherAge).to \
+          receive(:skipped?).and_return true
+      end
+
+      it { is_expected.to include "age" => 33 }
+
+      context "when exporting the skipped step" do
+        it "contains the preexisting value" do
+          skipped_step = wizard.find(TestWizard::OtherAge.key)
+          expect(skipped_step.export["age"]).to eq(22)
+        end
+      end
+    end
+
+    context "when the store was populated with matchback data" do
+      before do
+        wizardstore["candidate_id"] = "abc-123"
+        wizardstore["qualification_id"] = "def-456"
+      end
+
+      it { is_expected.to include "candidate_id" => "abc-123" }
+      it { is_expected.to include "qualification_id" => "def-456" }
     end
   end
 end

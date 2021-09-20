@@ -1,38 +1,63 @@
-# frozen_string_literal: true
-
 module DFEWizard
   class Store
-    attr_reader :data
-    delegate :keys, :to_h, :to_hash, to: :data
+    class InvalidBackingStore < RuntimeError; end
 
-    def initialize(data)
-      raise InvalidBackingStore unless data.respond_to?(:[]=)
+    delegate :keys, :to_h, :to_hash, to: :combined_data
 
-      @data = data
+    def initialize(new_data, preexisting_data)
+      stores = [new_data, preexisting_data]
+      raise InvalidBackingStore unless stores.all? { |s| s.respond_to?(:[]=) }
+
+      @new_data = new_data
+      @preexisting_data = preexisting_data
     end
 
     def [](key)
-      data[key.to_s]
+      combined_data[key.to_s]
     end
 
     def []=(key, value)
-      data[key.to_s] = value
+      @new_data[key.to_s] = value
     end
 
-    def fetch(*keys)
-      data.slice(*Array.wrap(keys).flatten.map(&:to_s)).stringify_keys
+    def preexisting(key)
+      @preexisting_data[key.to_s]
+    end
+
+    def fetch(*keys, source: :both)
+      array_of_keys = Array.wrap(keys).flatten.map(&:to_s)
+      Hash[array_of_keys.zip].merge(store(source).slice(*array_of_keys))
     end
 
     def persist(attributes)
-      data.merge! attributes.stringify_keys
+      @new_data.merge!(attributes.stringify_keys)
+
+      true
+    end
+
+    def persist_preexisting(attributes)
+      @preexisting_data.merge!(attributes.stringify_keys)
 
       true
     end
 
     def purge!
-      data.clear
+      @new_data.clear
+      @preexisting_data.clear
     end
 
-    class InvalidBackingStore < RuntimeError; end
+  private
+
+    def store(source)
+      case source
+      when :new then @new_data
+      when :preexisting then @preexisting_data
+      else combined_data
+      end
+    end
+
+    def combined_data
+      @preexisting_data.merge(@new_data)
+    end
   end
 end

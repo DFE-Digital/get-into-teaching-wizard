@@ -1,14 +1,16 @@
-# frozen_string_literal: true
-
 module DFEWizard
   class Step
-    include ::ActiveModel::Model
-    include ::ActiveModel::Attributes
-    include ::ActiveModel::Validations::Callbacks
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+    include ActiveModel::Validations::Callbacks
 
     class << self
       def key
         name.split("::").last.underscore
+      end
+
+      def contains_personal_details?
+        false
       end
 
       def title
@@ -16,7 +18,7 @@ module DFEWizard
       end
     end
 
-    delegate :key, to: :class
+    delegate :key, :contains_personal_details?, to: :class
     delegate :title, to: :class
     alias_method :id, :key
 
@@ -34,6 +36,10 @@ module DFEWizard
       persist_to_store
     end
 
+    def exit?
+      !can_proceed?
+    end
+
     def can_proceed?
       true
     end
@@ -43,16 +49,38 @@ module DFEWizard
     end
 
     def skipped?
+      return false unless optional?
+
+      @store.fetch(attribute_names, source: :preexisting).values.all?(&:present?)
+    end
+
+    def optional?
       false
     end
 
-    def export
-      return {} if skipped?
+    def other_step(key_or_class)
+      key = key_or_class.respond_to?(:key) ? key_or_class.key : key_or_class.to_s
+      @wizard.find(key)
+    end
 
-      Hash[attributes.keys.zip([])].merge attributes_from_store
+    def flash_error(message)
+      errors.add(:base, message)
+    end
+
+    def export
+      attributes = skipped? ? preexisting_attributes : attributes_from_store
+      Hash[attributes.keys.zip([])].merge attributes
+    end
+
+    def reviewable_answers
+      attributes
     end
 
   private
+
+    def preexisting_attributes
+      @store.fetch attributes.keys, source: :preexisting
+    end
 
     def attributes_from_store
       @store.fetch attributes.keys
