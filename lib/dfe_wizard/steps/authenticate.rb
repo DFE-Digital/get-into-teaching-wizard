@@ -3,12 +3,16 @@ module DFEWizard
     class Authenticate < ::DFEWizard::Step
       include ActiveModel::Dirty
 
+      INVALID_MESSAGE = "The verification code should be 6 digits".freeze
+      BLANK_MESSAGE = "Enter the verification code sent to your email address".freeze
+      WRONG_CODE_MESSAGE = "Please enter the latest verification code sent to your email address".freeze
+
       IDENTITY_ATTRS = %i[email first_name last_name date_of_birth].freeze
 
       attribute :timed_one_time_password
 
-      validates :timed_one_time_password, presence: true, length: { is: 6, message: :invalid },
-                format: { with: /\A[0-9]*\z/, message: :invalid }
+      validates :timed_one_time_password, presence: { message: BLANK_MESSAGE }, length: { is: 6, message: INVALID_MESSAGE },
+                                          format: { with: /\A[0-9]*\z/, message: INVALID_MESSAGE}
       validate :timed_one_time_password_is_correct, if: :perform_api_check?
 
       before_validation if: :timed_one_time_password do
@@ -49,7 +53,7 @@ module DFEWizard
           @wizard.process_access_token(timed_one_time_password, request)
         end
       rescue GetIntoTeachingApiClient::ApiError
-        errors.add(:timed_one_time_password, :wrong_code)
+        errors.add(:timed_one_time_password, WRONG_CODE_MESSAGE)
       end
     end
   end

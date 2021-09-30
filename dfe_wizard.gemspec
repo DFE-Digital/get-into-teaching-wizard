@@ -36,6 +36,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rubocop-govuk", "3.17.2"
   gem.add_development_dependency "simplecov", ">= 0.19.1"
   gem.add_development_dependency "sqlite3"
-  gem.add_development_dependency "yard"
   gem.add_development_dependency "webrick"
+  gem.add_development_dependency "yard"
 end

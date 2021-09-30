@@ -20,12 +20,14 @@ shared_context "with wizard store" do
 end
 
 shared_context "with wizard step" do
+  include_context "with wizard store"
   subject { instance }
 
-  include_context "with wizard store"
-
   let(:attributes) { {} }
-  let(:instance) { described_class.new nil, wizardstore, attributes }
+  let(:wizard) { TestWizard.new(wizardstore, TestWizard::Name.key) }
+  let(:instance) do
+    described_class.new wizard, wizardstore, attributes
+  end
 end
 
 shared_examples "a wizard step" do
