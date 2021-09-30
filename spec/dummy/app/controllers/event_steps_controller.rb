@@ -1,12 +1,6 @@
 class EventStepsController < ApplicationController
-  # before_action :set_is_walk_in, only: %i[show update]
-  # before_action :load_event
-
-  # include DFEWizard::Controller
-
-  def index
-    render plain: "ok"
-  end
+  include DFEWizard::Controller
+  self.wizard_class = Events::Wizard
 
 #   before_action :redirect_closed_events, only: %i[show update]
 #   before_action :set_step_page_title, only: [:show]
@@ -23,10 +17,10 @@ class EventStepsController < ApplicationController
 #     end
 #   end
 
-#   def step_path(step = params[:id], urlparams = {})
-#     event_step_path params[:event_id], step, urlparams
-#   end
-#   helper_method :step_path
+  def step_path(step = params[:id], urlparams = {})
+    event_step_path params[:event_id], step, urlparams
+  end
+  helper_method :step_path
 
 #   def completed_step_path
 #     if wizard_store["subscribe_to_mailing_list"]
@@ -36,19 +30,9 @@ class EventStepsController < ApplicationController
 #     end
 #   end
 
-#   def wizard_store
-#     ::DFEWizard::Store.new app_store, crm_store
-#   end
-
-#   def app_store
-#     session[:events] ||= {}
-#     session[:events][params[:event_id]] ||= {}
-#   end
-
-#   def crm_store
-#     session[:events_crm] ||= {}
-#     session[:events_crm][params[:event_id]] ||= {}
-#   end
+  def wizard_store
+    ::DFEWizard::Store.new({}, {})
+  end
 
 #   def load_event
 #     @event = { event: true }

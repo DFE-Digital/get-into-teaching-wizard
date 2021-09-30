@@ -1,4 +1,4 @@
-require "spec_helper"
+require "rails_helper"
 
 describe DFEWizard::Base do
   subject { wizard }

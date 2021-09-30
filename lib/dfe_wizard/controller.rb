@@ -1,3 +1,5 @@
+require_relative "steps/authenticate"
+
 module DFEWizard
   module Controller
     extend ActiveSupport::Concern
@@ -116,7 +118,7 @@ module DFEWizard
     end
 
     def camelized_identity_data
-      Wizard::Steps::Authenticate.new(nil, wizard_store)
+      DFEWizard::Steps::Authenticate.new(nil, wizard_store)
                                  .candidate_identity_data
     end
   end
