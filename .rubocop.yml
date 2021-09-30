@@ -26,8 +26,21 @@ RSpec/LeakyConstantDeclaration:
 RSpec/LeadingSubject:
   Enabled: false
 
-RSpec/LeadingSubject:
-  Enabled: false
-
 RSpec/NestedGroups:
   Max: 6
+
+RSpec/MessageSpies:
+  Exclude:
+    - spec/**/*.rb
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - spec/**/*.rb
+
+RSpec/ExampleLength:
+  Exclude:
+    - spec/**/*.rb
+
+RSpec/ContextWording:
+  Exclude:
+    - spec/**/*.rb

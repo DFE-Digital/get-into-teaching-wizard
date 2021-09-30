@@ -12,7 +12,6 @@ require File.expand_path("dummy/config/application", __dir__)
 
 require "dfe_wizard"
 
-
 shared_context "with wizard store" do
   let(:backingstore) { { "name" => "Joe", "age" => 35 } }
   let(:preexisting_backingstore) { {} }

@@ -19,7 +19,6 @@ describe "EventStepsController", type: :request do
     before { get step_path }
 
     it { is_expected.to have_http_status :success }
-
   end
 
   describe "#update" do
@@ -35,7 +34,7 @@ describe "EventStepsController", type: :request do
 
       it do
         redirect_to \
-            event_step_path(readable_event_id, "personal_details")
+          event_step_path(readable_event_id, "personal_details")
       end
     end
 
@@ -57,10 +56,10 @@ describe "EventStepsController", type: :request do
       context "when all valid" do
         before do
           allow_any_instance_of(Events::Steps::PersonalDetails).to \
-              receive(:valid?).and_return true
+            receive(:valid?).and_return true
 
           allow_any_instance_of(Events::Steps::ContactDetails).to \
-              receive(:valid?).and_return true
+            receive(:valid?).and_return true
         end
 
         let(:details_params) { { "address_telephone": "valid" } }
@@ -82,7 +81,6 @@ describe "EventStepsController", type: :request do
   describe "#completed" do
     subject do
       get completed_event_steps_path(readable_event_id)
-      # pry
       response
     end
 
@@ -95,7 +93,7 @@ describe "EventStepsController", type: :request do
 
     it "redirects to the authentication_path with verification_resent: true" do
       allow_any_instance_of(GetIntoTeachingApiClient::CandidatesApi).to \
-          receive(:create_candidate_access_token)
+        receive(:create_candidate_access_token)
       get resend_verification_event_steps_path(readable_event_id, redirect_path: "redirect/path")
       expect(response).to redirect_to controller.send(:authenticate_path, verification_resent: true)
     end

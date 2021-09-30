@@ -2,19 +2,21 @@ require "rails_helper"
 
 describe DFEWizard::Steps::Authenticate, type: :model do
   include_context "with wizard step"
-  it_behaves_like "a wizard step"
+  before { allow(wizard).to receive(:exchange_access_token).and_return({}) }
 
-  before { allow(wizard).to receive(:exchange_access_token) { {} } }
+  it_behaves_like "a wizard step"
 
   it { is_expected.to respond_to :timed_one_time_password }
 
   context "validations" do
     before { instance.valid? }
+
     subject { instance.errors.messages }
+
     it { is_expected.to include(:timed_one_time_password) }
   end
 
-  context "timed one time password" do
+  context "with timed one time password" do
     it { is_expected.to allow_value("000000").for :timed_one_time_password }
     it { is_expected.to allow_value(" 123456").for :timed_one_time_password }
     it { is_expected.not_to allow_value("abc123").for :timed_one_time_password }
@@ -38,7 +40,7 @@ describe DFEWizard::Steps::Authenticate, type: :model do
 
   describe "#export" do
     it "returns an empty hash" do
-      allow_any_instance_of(described_class).to receive(:skipped?) { false }
+      allow_any_instance_of(described_class).to receive(:skipped?).and_return(false)
       subject.timed_one_time_password = "123456"
       expect(subject.export).to be_empty
     end
@@ -58,7 +60,7 @@ describe DFEWizard::Steps::Authenticate, type: :model do
         email: wizardstore["email"],
         firstName: wizardstore["first_name"],
         lastName: wizardstore["last_name"],
-        )
+      )
     end
 
     context "when invalid" do
@@ -81,7 +83,7 @@ describe DFEWizard::Steps::Authenticate, type: :model do
       end
 
       it "does not call the API on validation if already authenticated" do
-        expect(wizard).to receive(:access_token_used?) { true }
+        expect(wizard).to receive(:access_token_used?).and_return(true)
         expect(wizard).not_to receive(:exchange_access_token)
         subject.timed_one_time_password = totp
         subject.valid?
@@ -105,7 +107,7 @@ describe DFEWizard::Steps::Authenticate, type: :model do
     context "when TOTP is incorrect" do
       it "is marked as invalid" do
         expect(wizard).to receive(:exchange_access_token).with(totp, request)
-                                                         .and_raise(GetIntoTeachingApiClient::ApiError)
+            .and_raise(GetIntoTeachingApiClient::ApiError)
         expect(subject).to be_invalid
       end
     end

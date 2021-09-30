@@ -135,13 +135,17 @@ describe DFEWizard::Store do
 
   describe "#prune!" do
     subject { instance.keys }
+
     let(:leave) { "age" }
 
     before { instance.prune!(leave: leave) }
 
     it "will remove all keys that aren't marked as 'leave'" do
-      expect(instance.keys).to include(leave)
       expect(instance.keys).not_to include(new_data.keys.excluding(leave))
+    end
+
+    it "will keep all keys that are marked as 'leave'" do
+      expect(instance.keys).to include(leave)
     end
   end
 end

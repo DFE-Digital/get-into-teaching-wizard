@@ -12,7 +12,7 @@ module DFEWizard
       attribute :timed_one_time_password
 
       validates :timed_one_time_password, presence: { message: BLANK_MESSAGE }, length: { is: 6, message: INVALID_MESSAGE },
-                                          format: { with: /\A[0-9]*\z/, message: INVALID_MESSAGE}
+                                          format: { with: /\A[0-9]*\z/, message: INVALID_MESSAGE }
       validate :timed_one_time_password_is_correct, if: :perform_api_check?
 
       before_validation if: :timed_one_time_password do
