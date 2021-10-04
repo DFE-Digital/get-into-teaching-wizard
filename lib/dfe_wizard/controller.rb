@@ -73,10 +73,6 @@ module DFEWizard
       @current_step.flash_error(message)
     end
 
-    def wizard_store
-      Store.new new_store, preexisting_store
-    end
-
     def load_wizard
       @wizard = wizard_class.new(wizard_store, params[:id])
     rescue DFEWizard::UnknownStep
