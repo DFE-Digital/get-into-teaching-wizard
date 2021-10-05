@@ -1,3 +1,8 @@
+require "simplecov"
+SimpleCov.start do
+  add_filter "/spec/dummy"
+end
+
 ENV["RAILS_ENV"] ||= "test"
 
 require "rails/all"
