@@ -307,6 +307,17 @@ describe DFEWizard::Base do
     it { is_expected.to have_attributes key: "age" }
   end
 
+  describe "first_exit_step" do
+    subject { wizard.first_exit_step }
+
+    before do
+      allow_any_instance_of(TestWizard::Postcode).to \
+          receive(:can_proceed?).and_return false
+    end
+
+    it { is_expected.to have_attributes key: "postcode" }
+  end
+
   describe "skipped steps" do
     subject { wizardclass.new wizardstore, current_step }
 
