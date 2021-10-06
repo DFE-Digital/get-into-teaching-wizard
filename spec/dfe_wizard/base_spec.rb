@@ -312,7 +312,7 @@ describe DFEWizard::Base do
 
     before do
       allow_any_instance_of(TestWizard::Postcode).to \
-          receive(:can_proceed?).and_return false
+        receive(:can_proceed?).and_return false
     end
 
     it { is_expected.to have_attributes key: "postcode" }

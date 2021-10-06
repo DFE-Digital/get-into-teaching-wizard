@@ -30,4 +30,9 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  activemodel:
+    errors:
+      magic_link_token:
+        invalid: "We could not find this link. Enter the details below to help us verify you."
+        expired: "This link has expired. Enter the details below to help us verify you."
+        already_exchanged: "This link has been used already. Enter the details below to help us verify you."
