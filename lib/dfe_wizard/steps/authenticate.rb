@@ -27,6 +27,10 @@ module DFEWizard
         {}
       end
 
+      def reviewable_answers
+        {}
+      end
+
       def candidate_identity_data
         @store.fetch(IDENTITY_ATTRS).compact.transform_keys do |k|
           k.camelize(:lower).to_sym
