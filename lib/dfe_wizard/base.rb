@@ -5,10 +5,13 @@ module DFEWizard
 
   class AccessTokenNotSupportedError < RuntimeError; end
 
+  class ContinueUnverifiedNotSupportedError < RuntimeError; end
+
   class Base
     module Auth
       ACCESS_TOKEN = 0
       MAGIC_LINK_TOKEN = 1
+      UNVERIFIED = 2
     end
 
     class_attribute :steps
@@ -113,6 +116,10 @@ module DFEWizard
       @store["auth_method"] == Auth::ACCESS_TOKEN
     end
 
+    def unverified?
+      @store["auth_method"] == Auth::UNVERIFIED
+    end
+
     def earlier_keys(key = current_key)
       index = key_index(key)
       return [] unless index.positive?
@@ -145,6 +152,11 @@ module DFEWizard
       prepopulate_store(response, Auth::ACCESS_TOKEN)
     end
 
+    def process_unverified_request(request)
+      response = exchange_unverified_request(request)
+      prepopulate_store(response, Auth::UNVERIFIED)
+    end
+
   protected
 
     def exchange_magic_link_token(_token)
@@ -153,6 +165,10 @@ module DFEWizard
 
     def exchange_access_token(_timed_one_time_password, _request)
       raise(AccessTokenNotSupportedError)
+    end
+
+    def exchange_unverified_request(_request)
+      raise(ContinueUnverifiedNotSupportedError)
     end
 
   private

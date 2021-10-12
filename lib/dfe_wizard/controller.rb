@@ -7,7 +7,7 @@ module DFEWizard
     included do
       class_attribute :wizard_class
       before_action :load_wizard, :load_current_step, only: %i[show update]
-      before_action :process_magic_link_token, only: %i[show]
+      before_action :process_magic_link_token, :process_skip_verification, only: %i[show]
       before_action :display_magic_link_token_error, only: %i[show]
     end
 
@@ -47,12 +47,25 @@ module DFEWizard
 
   private
 
+    def process_skip_verification
+      return unless request.query_parameters[:skip_verification]
+
+      request = GetIntoTeachingApiClient::ExistingCandidateRequest.new(camelized_identity_data)
+      @wizard.process_unverified_request(request)
+      wizard_store["authenticate"] = false
+      redirect_to(step_after_authenticate_path)
+    rescue GetIntoTeachingApiClient::ApiError => e
+      redirect_to(first_step_path) && return if e.code == 404
+
+      raise
+    end
+
     def process_magic_link_token
       token = request.query_parameters[:magic_link_token]
       return if token.blank?
 
       @wizard.process_magic_link_token(token)
-      redirect_to(step_path(@wizard.next_key(::DFEWizard::Steps::Authenticate.key)))
+      redirect_to(step_after_authenticate_path)
     rescue GetIntoTeachingApiClient::ApiError => e
       handle_magic_link_token_error(e) && return if e.code == 401
 
@@ -95,6 +108,10 @@ module DFEWizard
 
     def first_step_path(opts = {})
       step_path(wizard_class.steps.first.key, opts)
+    end
+
+    def step_after_authenticate_path
+      step_path(@wizard.next_key(DFEWizard::Steps::Authenticate.key))
     end
 
     def completed_step_path
