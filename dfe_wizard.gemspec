@@ -12,8 +12,8 @@ Gem::Specification.new do |gem|
     Abstract classes to simplify building a linear wizard with conditional
     steps from ActiveModel objects
   DESCRIPTION
-  gem.authors = ["Jeremy Wilkins"]
-  gem.email = ["jeremy.wilkins@digital.education.gov.uk"]
+  gem.authors = ["Jeremy Wilkins", "Joseph Kempster"]
+  gem.email = %w[jeremy.wilkins@digital.education.gov.uk joseph.kempster@education.gov.uk]
   gem.homepage = "https://github.com/DFE-Digital/dfe_wizard"
   gem.license = "MIT"
 
