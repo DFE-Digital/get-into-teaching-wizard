@@ -28,6 +28,8 @@ module DFEWizard
 
         # Needs to occur after redirect because it purges data after submission
         @wizard.complete!
+      else
+        render :show, status: :unprocessable_entity
       end
     end
 
