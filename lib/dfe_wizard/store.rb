@@ -46,6 +46,13 @@ module DFEWizard
       @preexisting_data.clear
     end
 
+    # purges the preexisting data but leaves a subset of new data
+    # that might be used on or after the completion page
+    def prune!(leave: [])
+      @new_data.slice!(*Array.wrap(leave))
+      @preexisting_data.clear
+    end
+
   private
 
     def store(source)

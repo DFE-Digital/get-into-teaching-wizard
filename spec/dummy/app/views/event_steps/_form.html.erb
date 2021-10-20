@@ -1,0 +1,18 @@
+<section class="registration__event">
+  <% if current_step.errors.any? %>
+    <ul>
+      <% current_step.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <%= form_for current_step, url: step_path do |f| %>
+    <%= render current_step.key, current_step: current_step, f: f %>
+
+    <% if wizard.step_can_proceed? %>
+      <% button_text = "Next" %>
+      <%= f.button button_text, class: "call-to-action-button button", data: { "prevent-double-click": true, "disable-with": button_text } %>
+    <% end %>
+  <% end %>
+</section>

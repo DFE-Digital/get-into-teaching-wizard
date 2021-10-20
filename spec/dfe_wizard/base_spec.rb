@@ -1,4 +1,4 @@
-require "spec_helper"
+require "rails_helper"
 
 describe DFEWizard::Base do
   subject { wizard }
@@ -29,6 +29,18 @@ describe DFEWizard::Base do
       before { wizardstore["auth_method"] = described_class::Auth::MAGIC_LINK_TOKEN }
 
       it { is_expected.to be_magic_link_token_used }
+    end
+  end
+
+  describe "#unverified?" do
+    subject { wizard }
+
+    it { is_expected.not_to be_unverified }
+
+    context "when auth method is set" do
+      before { wizardstore["auth_method"] = described_class::Auth::UNVERIFIED }
+
+      it { is_expected.to be_unverified }
     end
   end
 
@@ -158,6 +170,43 @@ describe DFEWizard::Base do
       end
 
       it { expect { wizard.exchange_access_token(token, {}) }.to raise_error(DFEWizard::AccessTokenNotSupportedError) }
+    end
+  end
+
+  describe "#process_unverified_request" do
+    let(:request) { GetIntoTeachingApiClient::ExistingCandidateRequest.new }
+    let(:stub_response) do
+      GetIntoTeachingApiClient::TeachingEventAddAttendee.new(
+        candidateId: "abc123",
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@doe.com",
+        isVerified: false,
+      )
+    end
+    let(:response_hash) { stub_response.to_hash.transform_keys { |k| k.to_s.underscore } }
+
+    before do
+      allow_any_instance_of(TestWizard).to \
+        receive(:exchange_unverified_request).with(request) { stub_response }
+    end
+
+    subject! do
+      wizard.process_unverified_request(request)
+      wizardstore.fetch(%w[candidate_id first_name last_name email is_verified], source: :preexisting)
+    end
+
+    it { is_expected.to eq response_hash }
+    it { expect(wizard).to be_unverified }
+
+    context "when the wizard does not implement exchange_unverified_request" do
+      before do
+        allow_any_instance_of(TestWizard).to \
+          receive(:exchange_unverified_request).with(request)
+                                               .and_call_original
+      end
+
+      it { expect { wizard.exchange_unverified_request(request) }.to raise_error(DFEWizard::ContinueUnverifiedNotSupportedError) }
     end
   end
 
@@ -305,6 +354,17 @@ describe DFEWizard::Base do
     let(:backingstore) { { "name" => "test" } }
 
     it { is_expected.to have_attributes key: "age" }
+  end
+
+  describe "first_exit_step" do
+    subject { wizard.first_exit_step }
+
+    before do
+      allow_any_instance_of(TestWizard::Postcode).to \
+        receive(:can_proceed?).and_return false
+    end
+
+    it { is_expected.to have_attributes key: "postcode" }
   end
 
   describe "skipped steps" do

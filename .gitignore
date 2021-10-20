@@ -18,3 +18,5 @@ test/version_tmp
 tmp
 bin
 .idea
+*.log
+spec/dummy/db/
