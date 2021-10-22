@@ -24,13 +24,12 @@ module DFEWizard
       @current_step.assign_attributes step_params
 
       if @current_step.save
-        complete = @wizard.complete!
+        redirect_to next_step_path
 
-        if complete
-          redirect_to(step_path(:completed, @wizard.completion_attributes))
-        else
-          redirect_to(next_step_path)
-        end
+        # Needs to occur after redirect because it purges data after submission
+        @wizard.complete!
+      else
+        render :show, status: :unprocessable_entity
       end
     end
 
@@ -102,10 +101,10 @@ module DFEWizard
     def next_step_path
       if (next_key = @wizard.next_key)
         step_path next_key
-      elsif (exit_step = @wizard.first_exit_step)
-        step_path exit_step
       elsif (invalid_step = @wizard.first_invalid_step)
         step_path invalid_step
+      else # all steps valid so completed
+        completed_step_path
       end
     end
 
@@ -135,7 +134,7 @@ module DFEWizard
 
     def camelized_identity_data
       DFEWizard::Steps::Authenticate.new(nil, wizard_store)
-                                    .candidate_identity_data
+                                 .candidate_identity_data
     end
   end
 end
