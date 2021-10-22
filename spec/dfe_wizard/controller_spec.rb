@@ -191,8 +191,22 @@ describe "EventStepsController", type: :request do
         it { is_expected.to redirect_to completed_event_steps_path(readable_event_id) }
       end
 
-      context "when invalid steps" do
+      context "when there are invalid steps" do
         let(:details_params) { { "address_telephone": "valid" } }
+
+        it do
+          is_expected.to redirect_to \
+            event_step_path(readable_event_id, "personal_details")
+        end
+      end
+
+      context "when an exit step was manually skipped" do
+        let(:details_params) { { "address_telephone": "valid" } }
+
+        before do
+          allow_any_instance_of(Events::Steps::PersonalDetails).to \
+            receive(:exit?).and_return true
+        end
 
         it do
           is_expected.to redirect_to \
