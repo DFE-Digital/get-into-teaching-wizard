@@ -46,6 +46,13 @@ describe DFEWizard::Steps::Authenticate, type: :model do
     end
   end
 
+  describe "#reviewable_answers" do
+    it "returns an empty hash" do
+      subject.timed_one_time_password = "123456"
+      expect(subject.reviewable_answers).to be_empty
+    end
+  end
+
   describe "#save" do
     before do
       subject.timed_one_time_password = totp
