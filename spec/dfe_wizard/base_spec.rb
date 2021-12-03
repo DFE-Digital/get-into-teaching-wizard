@@ -101,6 +101,12 @@ describe DFEWizard::Base do
     end
   end
 
+  describe "#reference" do
+    subject { wizard.reference }
+
+    it { is_expected.to eq("test") }
+  end
+
   describe "#process_magic_link_token" do
     let(:token) { "magic-link-token" }
     let(:stub_response) do
