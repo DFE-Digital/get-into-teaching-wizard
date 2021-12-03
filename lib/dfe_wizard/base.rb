@@ -52,6 +52,10 @@ module DFEWizard
 
     def matchback_attributes; end
 
+    def reference
+      self.class.to_s.gsub("Wizard", "").underscore
+    end
+
     def find(key)
       step(key).new self, @store
     end
