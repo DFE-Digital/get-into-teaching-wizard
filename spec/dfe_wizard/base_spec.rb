@@ -104,7 +104,7 @@ describe DFEWizard::Base do
   describe "#reference" do
     subject { wizard.reference }
 
-    it { is_expected.to eq("test") }
+    it { is_expected.to eq("test_wizard") }
   end
 
   describe "#process_magic_link_token" do
@@ -157,11 +157,15 @@ describe DFEWizard::Base do
 
     before do
       allow_any_instance_of(TestWizard).to \
-        receive(:exchange_access_token).with(token, {}) { stub_response }
+        receive(:exchange_access_token)
+        .with(token, an_instance_of(GetIntoTeachingApiClient::ExistingCandidateRequest)) do |_, _, request|
+          expect(request.reference).to eq("test_wizard")
+          stub_response
+        end
     end
 
     subject! do
-      wizard.process_access_token(token, {})
+      wizard.process_access_token(token, GetIntoTeachingApiClient::ExistingCandidateRequest.new)
       wizardstore.fetch(%w[candidate_id first_name last_name email], source: :preexisting)
     end
 
@@ -171,11 +175,11 @@ describe DFEWizard::Base do
     context "when the wizard does not implement exchange_access_token" do
       before do
         allow_any_instance_of(TestWizard).to \
-          receive(:exchange_access_token).with(token, {})
+          receive(:exchange_access_token).with(token, an_instance_of(GetIntoTeachingApiClient::ExistingCandidateRequest))
                                          .and_call_original
       end
 
-      it { expect { wizard.exchange_access_token(token, {}) }.to raise_error(DFEWizard::AccessTokenNotSupportedError) }
+      it { expect { wizard.exchange_access_token(token, GetIntoTeachingApiClient::ExistingCandidateRequest.new) }.to raise_error(DFEWizard::AccessTokenNotSupportedError) }
     end
   end
 

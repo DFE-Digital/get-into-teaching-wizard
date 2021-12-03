@@ -51,7 +51,8 @@ module DFEWizard
       end
 
       def timed_one_time_password_is_correct
-        request = GetIntoTeachingApiClient::ExistingCandidateRequest.new(candidate_identity_data)
+        params = candidate_identity_data.merge({ reference: @wizard.reference })
+        request = GetIntoTeachingApiClient::ExistingCandidateRequest.new(params)
         if timed_one_time_password_changed?
           clear_attribute_changes(%i[timed_one_time_password])
           @wizard.process_access_token(timed_one_time_password, request)

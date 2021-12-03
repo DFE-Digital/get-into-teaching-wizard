@@ -53,7 +53,7 @@ module DFEWizard
     def matchback_attributes; end
 
     def reference
-      self.class.to_s.gsub("Wizard", "").underscore
+      self.class.to_s.underscore.gsub("/", "_")
     end
 
     def find(key)
@@ -152,11 +152,13 @@ module DFEWizard
     end
 
     def process_access_token(token, request)
+      request.reference = reference
       response = exchange_access_token(token, request)
       prepopulate_store(response, Auth::ACCESS_TOKEN)
     end
 
     def process_unverified_request(request)
+      request.reference = "#{reference}-unverified"
       response = exchange_unverified_request(request)
       prepopulate_store(response, Auth::UNVERIFIED)
     end
