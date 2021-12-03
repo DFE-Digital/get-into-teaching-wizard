@@ -29,6 +29,10 @@ RSpec/LeadingSubject:
 RSpec/NestedGroups:
   Max: 6
 
+RSpec/ExpectInHook:
+  Exclude:
+    - spec/**/*.rb
+
 RSpec/MessageSpies:
   Exclude:
     - spec/**/*.rb

@@ -8,6 +8,7 @@ require "dfe_wizard/store"
 require "dfe_wizard/step"
 require "dfe_wizard/base"
 require "dfe_wizard/controller"
+require "dfe_wizard/issue_verification_code"
 
 module DFEWizard
 end
