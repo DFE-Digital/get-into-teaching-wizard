@@ -11,12 +11,12 @@ describe DFEWizard::Step do
     validates :name, presence: true
   end
 
-  class StubWizard < DFEWizard::Base
+  class StubSingleStepWizard < DFEWizard::Base
     self.steps = [FirstStep].freeze
   end
 
   let(:attributes) { {} }
-  let(:wizard) { StubWizard.new(wizardstore, "first_step") }
+  let(:wizard) { StubSingleStepWizard.new(wizardstore, "first_step") }
 
   describe ".key" do
     it { expect(described_class.key).to eql "step" }

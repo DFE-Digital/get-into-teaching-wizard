@@ -67,6 +67,7 @@ describe DFEWizard::Steps::Authenticate, type: :model do
         email: wizardstore["email"],
         firstName: wizardstore["first_name"],
         lastName: wizardstore["last_name"],
+        reference: wizard.reference,
       )
     end
 

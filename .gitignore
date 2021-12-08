@@ -20,3 +20,4 @@ bin
 .idea
 *.log
 spec/dummy/db/
+.byebug_history

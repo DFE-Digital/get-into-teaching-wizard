@@ -10,5 +10,6 @@ gem "get_into_teaching_api_client_faraday", github: "DFE-Digital/get-into-teachi
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 
 group :test do
+  gem "byebug"
   gem "shoulda-matchers", "~> 5.0"
 end
