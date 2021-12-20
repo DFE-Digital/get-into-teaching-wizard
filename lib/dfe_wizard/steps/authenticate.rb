@@ -32,9 +32,7 @@ module DFEWizard
       end
 
       def candidate_identity_data
-        @store.fetch(IDENTITY_ATTRS).compact.transform_keys do |k|
-          k.camelize(:lower).to_sym
-        end
+        @store.fetch(IDENTITY_ATTRS).compact
       end
 
     private

@@ -44,7 +44,6 @@ module DFEWizard
       attributes
         .slice("email", "first_name", "last_name")
         .merge({ "reference" => @wizard.reference })
-        .transform_keys { |k| k.camelize(:lower).to_sym }
     end
   end
 end
