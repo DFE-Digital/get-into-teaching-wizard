@@ -37,8 +37,8 @@ describe DFEWizard::IssueVerificationCode do
       let(:request) do
         GetIntoTeachingApiClient::ExistingCandidateRequest.new(
           email: subject.email,
-          firstName: subject.first_name,
-          lastName: subject.last_name,
+          first_name: subject.first_name,
+          last_name: subject.last_name,
           reference: wizard.reference,
         )
       end

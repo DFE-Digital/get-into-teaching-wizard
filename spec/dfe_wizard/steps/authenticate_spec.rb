@@ -65,8 +65,8 @@ describe DFEWizard::Steps::Authenticate, type: :model do
     let(:request) do
       GetIntoTeachingApiClient::ExistingCandidateRequest.new(
         email: wizardstore["email"],
-        firstName: wizardstore["first_name"],
-        lastName: wizardstore["last_name"],
+        first_name: wizardstore["first_name"],
+        last_name: wizardstore["last_name"],
         reference: wizard.reference,
       )
     end
@@ -105,7 +105,7 @@ describe DFEWizard::Steps::Authenticate, type: :model do
 
     context "when TOTP is correct" do
       it "updates the store with the response" do
-        response = GetIntoTeachingApiClient::TeachingEventAddAttendee.new(candidateId: "abc123")
+        response = GetIntoTeachingApiClient::TeachingEventAddAttendee.new(candidate_id: "abc123")
         expect(wizard).to receive(:exchange_access_token).with(totp, request) { response }
         subject.save
         expect(wizardstore["candidate_id"]).to eq(response.candidate_id)

@@ -38,7 +38,7 @@ module DFEWizard
     end
 
     def resend_verification
-      request = GetIntoTeachingApiClient::ExistingCandidateRequest.new(camelized_identity_data)
+      request = GetIntoTeachingApiClient::ExistingCandidateRequest.new(identity_data)
       GetIntoTeachingApiClient::CandidatesApi.new.create_candidate_access_token(request)
       redirect_to authenticate_path(verification_resent: true)
     rescue GetIntoTeachingApiClient::ApiError => e
@@ -52,7 +52,7 @@ module DFEWizard
     def process_skip_verification
       return unless request.query_parameters[:skip_verification]
 
-      request = GetIntoTeachingApiClient::ExistingCandidateRequest.new(camelized_identity_data)
+      request = GetIntoTeachingApiClient::ExistingCandidateRequest.new(identity_data)
       @wizard.process_unverified_request(request)
       wizard_store["authenticate"] = false
       redirect_to(step_after_authenticate_path)
@@ -134,9 +134,8 @@ module DFEWizard
       step_path :authenticate, params
     end
 
-    def camelized_identity_data
-      DFEWizard::Steps::Authenticate.new(nil, wizard_store)
-                                 .candidate_identity_data
+    def identity_data
+      DFEWizard::Steps::Authenticate.new(nil, wizard_store).candidate_identity_data
     end
   end
 end

@@ -111,9 +111,9 @@ describe DFEWizard::Base do
     let(:token) { "magic-link-token" }
     let(:stub_response) do
       {
-        candidateId: "abc123",
-        firstName: "John",
-        lastName: "Doe",
+        candidate_id: "abc123",
+        first_name: "John",
+        last_name: "Doe",
         email: "john@doe.com",
       }
     end
@@ -147,9 +147,9 @@ describe DFEWizard::Base do
     let(:token) { "access-token" }
     let(:stub_response) do
       {
-        candidateId: "abc123",
-        firstName: "John",
-        lastName: "Doe",
+        candidate_id: "abc123",
+        first_name: "John",
+        last_name: "Doe",
         email: "john@doe.com",
       }
     end
@@ -187,11 +187,11 @@ describe DFEWizard::Base do
     let(:request) { GetIntoTeachingApiClient::ExistingCandidateRequest.new }
     let(:stub_response) do
       GetIntoTeachingApiClient::TeachingEventAddAttendee.new(
-        candidateId: "abc123",
-        firstName: "John",
-        lastName: "Doe",
+        candidate_id: "abc123",
+        first_name: "John",
+        last_name: "Doe",
         email: "john@doe.com",
-        isVerified: false,
+        is_verified: false,
       )
     end
     let(:response_hash) { stub_response.to_hash.transform_keys { |k| k.to_s.underscore } }
