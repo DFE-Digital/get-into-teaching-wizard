@@ -53,6 +53,39 @@ describe DFEWizard::Step do
     it { expect(subject.other_step(FirstStep)).to be_kind_of(FirstStep) }
   end
 
+  describe "#seen?" do
+    context "when all attributes from the step exist in the store" do
+      before do
+        wizardstore["name"] = "John"
+        wizardstore["age"] = 18
+      end
+
+      it { is_expected.to be_seen }
+
+      context "when optional attributes are nil" do
+        before { wizardstore["age"] = nil }
+
+        it { is_expected.to be_seen }
+      end
+    end
+
+    context "when all attributes exist in the backing store" do
+      before do
+        wizardstore.purge!
+        preexisting_backingstore["name"] = "John"
+        preexisting_backingstore["age"] = 18
+      end
+
+      it { is_expected.not_to be_seen }
+    end
+
+    context "when attributes from the step do not yet exist in the store" do
+      before { wizardstore.purge! }
+
+      it { is_expected.not_to be_seen }
+    end
+  end
+
   describe "#skipped?" do
     context "when optional" do
       before { allow(subject).to receive(:optional?).and_return(true) }

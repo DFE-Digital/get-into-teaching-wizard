@@ -72,7 +72,8 @@ module DFEWizard
 
     def next_key(key = current_key)
       later_keys(key).find do |k|
-        !find(k).skipped?
+        step = find(k)
+        (!step.seen? || step.invalid? || !step.can_proceed?) && !step.skipped?
       end
     end
 

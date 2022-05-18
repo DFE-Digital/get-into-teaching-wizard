@@ -284,6 +284,36 @@ describe DFEWizard::Base do
       it { is_expected.to eql "postcode" }
     end
 
+    context "when the next step has been seen" do
+      before { wizardstore["age"] = 18 }
+
+      subject { wizard.next_key("name") }
+
+      it { is_expected.to eql "postcode" }
+
+      context "when the next step is invalid" do
+        before { wizardstore["age"] = 0 }
+
+        it { is_expected.to eql "age" }
+      end
+
+      context "when the next step is an exit step" do
+        before { allow_any_instance_of(TestWizard::Age).to receive(:can_proceed?).and_return(false) }
+
+        it { is_expected.to eql "age" }
+      end
+    end
+
+    context "when the next step has been pre-filled" do
+      before do
+        preexisting_backingstore["postcode"] = "TE5 1NG"
+      end
+
+      subject { wizard.next_key("age") }
+
+      it { is_expected.to eql "postcode" }
+    end
+
     context "when there are no more steps" do
       subject { wizard.next_key("postcode") }
 

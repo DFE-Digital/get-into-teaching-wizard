@@ -48,6 +48,10 @@ module DFEWizard
       !id.nil?
     end
 
+    def seen?
+      attributes.keys.difference(@store.new_keys).none?
+    end
+
     def skipped?
       return false unless optional?
 

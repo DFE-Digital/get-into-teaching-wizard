@@ -44,6 +44,7 @@ class TestWizard < DFEWizard::Base
   class Age < DFEWizard::Step
     attribute :age, :integer
     validates :age, presence: true
+    validates :age, numericality: { greater_than: 0 }
   end
 
   class Postcode < DFEWizard::Step

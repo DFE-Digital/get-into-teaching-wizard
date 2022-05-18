@@ -3,6 +3,7 @@ module DFEWizard
     class InvalidBackingStore < RuntimeError; end
 
     delegate :keys, :to_h, :to_hash, to: :combined_data
+    delegate :keys, to: :@new_data, prefix: :new
 
     def initialize(new_data, preexisting_data)
       stores = [new_data, preexisting_data]
