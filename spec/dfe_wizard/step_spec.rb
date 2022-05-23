@@ -53,6 +53,54 @@ describe DFEWizard::Step do
     it { expect(subject.other_step(FirstStep)).to be_kind_of(FirstStep) }
   end
 
+  describe "#required?" do
+    context "when skipped" do
+      before { allow(subject).to receive(:skipped?).and_return(true) }
+
+      it { is_expected.not_to be_required }
+    end
+
+    context "when not skipped" do
+      before { allow(subject).to receive(:skipped?).and_return(false) }
+
+      context "when not yet seen" do
+        before { allow(subject).to receive(:seen?).and_return(false) }
+
+        it { is_expected.to be_required }
+      end
+
+      context "when seen" do
+        before { allow(subject).to receive(:seen?).and_return(true) }
+
+        it { is_expected.not_to be_required }
+      end
+
+      context "when invalid" do
+        before { allow(subject).to receive(:invalid?).and_return(true) }
+
+        it { is_expected.to be_required }
+      end
+
+      context "when valid" do
+        before { allow(subject).to receive(:invalid?).and_return(false) }
+
+        it { is_expected.not_to be_required }
+      end
+
+      context "when exit step" do
+        before { allow(subject).to receive(:can_proceed?).and_return(false) }
+
+        it { is_expected.to be_required }
+      end
+
+      context "when not an exit step" do
+        before { allow(subject).to receive(:can_proceed?).and_return(true) }
+
+        it { is_expected.not_to be_required }
+      end
+    end
+  end
+
   describe "#seen?" do
     context "when all attributes from the step exist in the store" do
       before do

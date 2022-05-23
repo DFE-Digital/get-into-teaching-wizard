@@ -52,6 +52,10 @@ module DFEWizard
       attributes.keys.difference(@store.new_keys).none?
     end
 
+    def required?
+      (!seen? || invalid? || !can_proceed?) && !skipped?
+    end
+
     def skipped?
       return false unless optional?
 
