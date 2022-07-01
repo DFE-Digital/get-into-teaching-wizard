@@ -13,7 +13,7 @@ module DFEWizard
 
     def index
       query_params = request.query_parameters
-      redirect_to step_path(wizard_class.first_key, query_params)
+      redirect_to(step_path(wizard_class.first_key, query_params), status: :moved_permanently)
     end
 
     def show

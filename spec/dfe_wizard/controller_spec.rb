@@ -12,6 +12,7 @@ describe "EventStepsController", type: :request do
     before { get event_steps_path("123", query: "param") }
 
     it { is_expected.to redirect_to(event_step_path("123", { id: :personal_details, query: "param" })) }
+    it { is_expected.to have_http_status(:moved_permanently) }
   end
 
   describe "#show" do
