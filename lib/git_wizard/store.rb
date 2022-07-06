@@ -1,4 +1,4 @@
-module DFEWizard
+module GITWizard
   class Store
     class InvalidBackingStore < RuntimeError; end
 

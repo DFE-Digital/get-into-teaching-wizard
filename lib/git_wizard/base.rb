@@ -1,4 +1,4 @@
-module DFEWizard
+module GITWizard
   class UnknownStep < RuntimeError; end
 
   class MagicLinkTokenNotSupportedError < RuntimeError; end
