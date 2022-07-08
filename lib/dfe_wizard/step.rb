@@ -1,4 +1,4 @@
-module GITWizard
+module DFEWizard
   class Step
     include ActiveModel::Model
     include ActiveModel::Attributes

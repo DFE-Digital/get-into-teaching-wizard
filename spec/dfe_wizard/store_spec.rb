@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe GITWizard::Store do
+describe DFEWizard::Store do
   subject { instance }
 
   let(:new_data) { { "first_name" => "Joe", "last_name" => nil, "age" => 20 } }
@@ -18,7 +18,7 @@ describe GITWizard::Store do
       subject { described_class.new nil, preexisting_data }
 
       it "raises an InvalidBackingStore" do
-        expect { subject }.to raise_exception(GITWizard::Store::InvalidBackingStore)
+        expect { subject }.to raise_exception(DFEWizard::Store::InvalidBackingStore)
       end
     end
 
@@ -26,7 +26,7 @@ describe GITWizard::Store do
       subject { described_class.new preexisting_data, nil }
 
       it "raises an InvalidBackingStore" do
-        expect { subject }.to raise_exception(GITWizard::Store::InvalidBackingStore)
+        expect { subject }.to raise_exception(DFEWizard::Store::InvalidBackingStore)
       end
     end
   end

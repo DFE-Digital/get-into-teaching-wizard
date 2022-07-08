@@ -1,6 +1,6 @@
 require_relative "steps/authenticate"
 
-module GITWizard
+module DFEWizard
   module Controller
     extend ActiveSupport::Concern
 
@@ -90,7 +90,7 @@ module GITWizard
 
     def load_wizard
       @wizard = wizard_class.new(wizard_store, params[:id])
-    rescue GITWizard::UnknownStep
+    rescue DFEWizard::UnknownStep
       raise_not_found
     end
 
@@ -115,7 +115,7 @@ module GITWizard
     end
 
     def step_after_authenticate_path
-      step_path(@wizard.next_key(GITWizard::Steps::Authenticate.key))
+      step_path(@wizard.next_key(DFEWizard::Steps::Authenticate.key))
     end
 
     def completed_step_path
@@ -135,7 +135,7 @@ module GITWizard
     end
 
     def identity_data
-      GITWizard::Steps::Authenticate.new(nil, wizard_store).candidate_identity_data
+      DFEWizard::Steps::Authenticate.new(nil, wizard_store).candidate_identity_data
     end
   end
 end

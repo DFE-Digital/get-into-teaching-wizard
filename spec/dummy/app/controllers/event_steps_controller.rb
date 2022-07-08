@@ -1,5 +1,5 @@
 class EventStepsController < ApplicationController
-  include GITWizard::Controller
+  include DFEWizard::Controller
   self.wizard_class = Events::Wizard
 
   def step_path(step = params[:id], urlparams = {})
@@ -8,6 +8,6 @@ class EventStepsController < ApplicationController
   helper_method :step_path
 
   def wizard_store
-    ::GITWizard::Store.new({}, {})
+    ::DFEWizard::Store.new({}, {})
   end
 end

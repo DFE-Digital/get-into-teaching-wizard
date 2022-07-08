@@ -18,9 +18,9 @@ The wizard gem is tightly coupled to the GiT services and has the following func
 
 There is a 'dummy' application in the `spec` directory that implements a basic 'events wizard'. To construct a new wizard you will need to:
 
-- Define a number of wizard 'steps' that inherit from `git_wizard/step.rb`. Each step should have a number of `ActiveModel` attributes and a view to present the form.
-- Subclass `git_wizard/base.rb` with your own wizard, declaring steps and implementing the relevant abstract methods for exchanging a TOTP for existing candidate data. You can override `complete!` to submit a payload to the CRM API.
-- Mixin the `git_wizard/controller.rb` concern into your controller and declare  `wizard_class` and `wizard_store`. You also need to implement the `step_path` helper so the wizard knows how to redirect to the next step in your wizard.
+- Define a number of wizard 'steps' that inherit from `dfe_wizard/step.rb`. Each step should have a number of `ActiveModel` attributes and a view to present the form.
+- Subclass `dfe_wizard/base.rb` with your own wizard, declaring steps and implementing the relevant abstract methods for exchanging a TOTP for existing candidate data. You can override `complete!` to submit a payload to the CRM API.
+- Mixin the `dfe_wizard/controller.rb` concern into your controller and declare  `wizard_class` and `wizard_store`. You also need to implement the `step_path` helper so the wizard knows how to redirect to the next step in your wizard.
 - Set up the necessary routes in your application:
 
 ```
