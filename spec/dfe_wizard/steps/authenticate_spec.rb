@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe GITWizard::Steps::Authenticate, type: :model do
+describe DFEWizard::Steps::Authenticate, type: :model do
   include_context "with wizard step"
   before { allow(wizard).to receive(:exchange_access_token).and_return({}) }
 
@@ -99,7 +99,7 @@ describe GITWizard::Steps::Authenticate, type: :model do
 
       it "throws an error if #exchange_access_token is not defined" do
         expect(wizard).to receive(:exchange_access_token).and_call_original
-        expect { subject.save }.to raise_error(GITWizard::AccessTokenNotSupportedError)
+        expect { subject.save }.to raise_error(DFEWizard::AccessTokenNotSupportedError)
       end
     end
 

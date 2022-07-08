@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe GITWizard do
+RSpec.describe DFEWizard do
   describe "VERSION" do
     subject { described_class::VERSION }
 

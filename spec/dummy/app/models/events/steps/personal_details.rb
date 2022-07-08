@@ -1,6 +1,6 @@
 module Events
   module Steps
-    class PersonalDetails < ::GITWizard::Step
+    class PersonalDetails < ::DFEWizard::Step
       attribute :email
 
       validates :email, presence: true

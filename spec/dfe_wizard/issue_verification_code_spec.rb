@@ -1,12 +1,12 @@
 require "rails_helper"
 
-describe GITWizard::IssueVerificationCode do
+describe DFEWizard::IssueVerificationCode do
   subject { IssueVerificationCodeStep.new wizard, wizardstore, attributes }
 
   include_context "with wizard store"
 
-  class IssueVerificationCodeStep < GITWizard::Step
-    include ::GITWizard::IssueVerificationCode
+  class IssueVerificationCodeStep < DFEWizard::Step
+    include ::DFEWizard::IssueVerificationCode
 
     attribute :first_name
     attribute :last_name
@@ -17,7 +17,7 @@ describe GITWizard::IssueVerificationCode do
     validates :last_name, presence: true
   end
 
-  class StubIssueVerificationCodeWizard < GITWizard::Base
+  class StubIssueVerificationCodeWizard < DFEWizard::Base
     self.steps = [IssueVerificationCodeStep].freeze
   end
 

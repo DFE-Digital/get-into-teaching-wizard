@@ -1,6 +1,6 @@
-module GITWizard
+module DFEWizard
   module Steps
-    class Authenticate < ::GITWizard::Step
+    class Authenticate < ::DFEWizard::Step
       include ActiveModel::Dirty
 
       INVALID_MESSAGE = "The verification code should be 6 digits".freeze

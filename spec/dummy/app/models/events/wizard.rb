@@ -1,8 +1,8 @@
 module Events
-  class Wizard < ::GITWizard::Base
+  class Wizard < ::DFEWizard::Base
     self.steps = [
       Steps::PersonalDetails,
-      GITWizard::Steps::Authenticate,
+      DFEWizard::Steps::Authenticate,
       Steps::ContactDetails,
     ].freeze
 

@@ -2,11 +2,11 @@
 
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "git_wizard/version"
+require "dfe_wizard/version"
 
 Gem::Specification.new do |gem|
-  gem.name = "git_wizard"
-  gem.version = GITWizard::VERSION
+  gem.name = "dfe_wizard"
+  gem.version = DFEWizard::VERSION
   gem.summary = "Abstract classes for building a wizard"
   gem.description = <<~DESCRIPTION
     Abstract classes to simplify building a linear wizard with conditional
@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   DESCRIPTION
   gem.authors = ["Jeremy Wilkins", "Joseph Kempster"]
   gem.email = %w[jeremy.wilkins@digital.education.gov.uk joseph.kempster@education.gov.uk]
-  gem.homepage = "https://github.com/DFE-Digital/git_wizard"
+  gem.homepage = "https://github.com/DFE-Digital/dfe_wizard"
   gem.license = "MIT"
 
   gem.files = `git ls-files`.split($INPUT_RECORD_SEPARATOR)

@@ -1,4 +1,4 @@
-module GITWizard
+module DFEWizard
   module IssueVerificationCode
     extend ActiveSupport::Concern
 
