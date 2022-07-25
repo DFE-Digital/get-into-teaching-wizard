@@ -5,12 +5,12 @@ require "active_record"
 
 require File.expand_path("dummy/config/application", __dir__)
 
-require "dfe_wizard"
+require "git_wizard"
 
 shared_context "with wizard store" do
   let(:backingstore) { { "name" => "Joe", "age" => 35 } }
   let(:preexisting_backingstore) { {} }
-  let(:wizardstore) { DFEWizard::Store.new backingstore, preexisting_backingstore }
+  let(:wizardstore) { GITWizard::Store.new backingstore, preexisting_backingstore }
 end
 
 shared_context "with wizard step" do
@@ -29,25 +29,25 @@ shared_examples "a wizard step" do
   it { is_expected.to respond_to :save }
 end
 
-class TestWizard < DFEWizard::Base
-  class Name < DFEWizard::Step
+class TestWizard < GITWizard::Base
+  class Name < GITWizard::Step
     attribute :name
     validates :name, presence: true
   end
 
   # To simulate two steps writing to the same attribute.
-  class OtherAge < DFEWizard::Step
+  class OtherAge < GITWizard::Step
     attribute :age, :integer
     validates :age, presence: false
   end
 
-  class Age < DFEWizard::Step
+  class Age < GITWizard::Step
     attribute :age, :integer
     validates :age, presence: true
     validates :age, numericality: { greater_than: 0 }
   end
 
-  class Postcode < DFEWizard::Step
+  class Postcode < GITWizard::Step
     attribute :postcode
     validates :postcode, presence: true
   end

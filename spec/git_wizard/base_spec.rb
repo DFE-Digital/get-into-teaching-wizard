@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe DFEWizard::Base do
+describe GITWizard::Base do
   subject { wizard }
 
   include_context "with wizard store"
@@ -63,7 +63,7 @@ describe DFEWizard::Base do
 
     it "will raise exception for unknown step" do
       expect { wizardclass.step("unknown") }.to \
-        raise_exception(DFEWizard::UnknownStep)
+        raise_exception(GITWizard::UnknownStep)
     end
   end
 
@@ -74,7 +74,7 @@ describe DFEWizard::Base do
 
     it "will raise exception for unknown step" do
       expect { wizardclass.key_index("unknown") }.to \
-        raise_exception(DFEWizard::UnknownStep)
+        raise_exception(GITWizard::UnknownStep)
     end
   end
 
@@ -97,7 +97,7 @@ describe DFEWizard::Base do
 
     it "raises exception for unknown step" do
       expect { wizardclass.new wizardstore, "unknown" }.to \
-        raise_exception DFEWizard::UnknownStep
+        raise_exception GITWizard::UnknownStep
     end
   end
 
@@ -139,7 +139,7 @@ describe DFEWizard::Base do
                                              .and_call_original
       end
 
-      it { expect { wizard.process_magic_link_token(token) }.to raise_error(DFEWizard::MagicLinkTokenNotSupportedError) }
+      it { expect { wizard.process_magic_link_token(token) }.to raise_error(GITWizard::MagicLinkTokenNotSupportedError) }
     end
   end
 
@@ -179,7 +179,7 @@ describe DFEWizard::Base do
                                          .and_call_original
       end
 
-      it { expect { wizard.exchange_access_token(token, GetIntoTeachingApiClient::ExistingCandidateRequest.new) }.to raise_error(DFEWizard::AccessTokenNotSupportedError) }
+      it { expect { wizard.exchange_access_token(token, GetIntoTeachingApiClient::ExistingCandidateRequest.new) }.to raise_error(GITWizard::AccessTokenNotSupportedError) }
     end
   end
 
@@ -216,7 +216,7 @@ describe DFEWizard::Base do
                                                .and_call_original
       end
 
-      it { expect { wizard.exchange_unverified_request(request) }.to raise_error(DFEWizard::ContinueUnverifiedNotSupportedError) }
+      it { expect { wizard.exchange_unverified_request(request) }.to raise_error(GITWizard::ContinueUnverifiedNotSupportedError) }
     end
   end
 
