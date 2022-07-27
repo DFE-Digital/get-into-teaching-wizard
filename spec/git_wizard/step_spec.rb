@@ -1,17 +1,17 @@
 require "rails_helper"
 
-describe DFEWizard::Step do
+describe GITWizard::Step do
   subject { FirstStep.new wizard, wizardstore, attributes }
 
   include_context "with wizard store"
 
-  class FirstStep < DFEWizard::Step
+  class FirstStep < GITWizard::Step
     attribute :name
     attribute :age, :integer
     validates :name, presence: true
   end
 
-  class StubSingleStepWizard < DFEWizard::Base
+  class StubSingleStepWizard < GITWizard::Base
     self.steps = [FirstStep].freeze
   end
 
