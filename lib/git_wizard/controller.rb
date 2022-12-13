@@ -1,5 +1,3 @@
-require_relative "steps/authenticate"
-
 module GITWizard
   module Controller
     extend ActiveSupport::Concern

@@ -11,6 +11,8 @@ require "rails-controller-testing"
 require "dummy/config/environment"
 require "shoulda/matchers"
 
+Dir["#{Dir.getwd}/spec/support/**/*.rb"].sort.each { |f| require f }
+
 require "spec_helper"
 
 Shoulda::Matchers.configure do |config|
