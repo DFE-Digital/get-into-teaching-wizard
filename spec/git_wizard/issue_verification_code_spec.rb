@@ -37,8 +37,6 @@ describe GITWizard::IssueVerificationCode do
       let(:request) do
         GetIntoTeachingApiClient::ExistingCandidateRequest.new(
           email: subject.email,
-          first_name: subject.first_name,
-          last_name: subject.last_name,
           reference: wizard.reference,
         )
       end
