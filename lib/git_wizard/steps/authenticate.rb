@@ -7,7 +7,7 @@ module GITWizard
       BLANK_MESSAGE = "Enter the verification code sent to your email address".freeze
       WRONG_CODE_MESSAGE = "Please enter the latest verification code sent to your email address".freeze
 
-      IDENTITY_ATTRS = %i[email].freeze
+      IDENTITY_ATTRS = %i[email first_name last_name date_of_birth].freeze
 
       attribute :timed_one_time_password
 
