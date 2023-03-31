@@ -42,7 +42,7 @@ module GITWizard
 
     def request_attributes
       attributes
-        .slice("email")
+        .slice("email", "first_name", "last_name")
         .merge({ "reference" => @wizard.reference })
     end
   end

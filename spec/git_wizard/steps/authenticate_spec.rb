@@ -65,6 +65,8 @@ describe GITWizard::Steps::Authenticate, type: :model do
     let(:request) do
       GetIntoTeachingApiClient::ExistingCandidateRequest.new(
         email: wizardstore["email"],
+        first_name: wizardstore["first_name"],
+        last_name: wizardstore["last_name"],
         reference: wizard.reference,
       )
     end
